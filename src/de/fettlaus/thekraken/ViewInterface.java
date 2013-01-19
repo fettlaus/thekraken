@@ -6,7 +6,7 @@ import de.fettlaus.thekraken.events.KrakenListener;
  * @author bachelor
  *
  */
-public interface ViewInterface extends Runnable {
+public interface ViewInterface{
 	void subscribePingButtonClicked(final KrakenListener ev);
 	void subscribeSendMessage(final KrakenListener ev);
 	void subscribeConnectButtonClicked(final KrakenListener ev);
@@ -18,8 +18,8 @@ public interface ViewInterface extends Runnable {
 	void setNotification(String msg);
 	void setClients(String[] clients);
 	String getMessageString();
-	String getNewClient();
+	String getNewClientIP();
+	String getNewClientPort();
 	int getCurrentClientIndex();
-	String getNewConnectionField();
 
 }

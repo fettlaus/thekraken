@@ -21,7 +21,6 @@ public class Presenter {
 	public void addView(ViewInterface view){
 		views.add(view);
 		connectEvents(view);
-		view.run();
 	}
 
 }

@@ -19,7 +19,7 @@ public class Messages {
 	//
 	////////////////////////////////////////////////////////////////////////////
 	private static final String BUNDLE_NAME = "de.fettlaus.thekraken.view.messages"; //$NON-NLS-1$
-	private static final ResourceBundle RESOURCE_BUNDLE = loadBundle();
+	private static ResourceBundle RESOURCE_BUNDLE = loadBundle();
 	private static ResourceBundle loadBundle() {
 		return ResourceBundle.getBundle(BUNDLE_NAME);
 	}
@@ -35,5 +35,8 @@ public class Messages {
 		} catch (MissingResourceException e) {
 			return "!" + key + "!";
 		}
+	}
+	public static void reloadBundle(){
+		RESOURCE_BUNDLE = loadBundle();
 	}
 }

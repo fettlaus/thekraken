@@ -80,6 +80,18 @@ public class MockView implements ViewInterface {
 		
 	}
 
+	@Override
+	public String getNewClientIP() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNewClientPort() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 
