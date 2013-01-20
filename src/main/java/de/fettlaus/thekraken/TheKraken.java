@@ -2,9 +2,11 @@ package de.fettlaus.thekraken;
 
 import java.util.Locale;
 
-import de.fettlaus.thekraken.tests.mocks.MockModel;
-import de.fettlaus.thekraken.tests.mocks.MockView;
 import de.fettlaus.thekraken.view.View;
+import de.fettlaus.thekraken.Presenter;
+
+
+
 
 @SuppressWarnings("unused")
 public class TheKraken {
@@ -16,7 +18,7 @@ public class TheKraken {
 	public static void main(String[] args) throws InterruptedException {
 		//Locale.setDefault(Locale.GERMAN);
 		//Locale.setDefault(Locale.GERMANY);
-		Presenter pres = new Presenter(new MockModel());
+		Presenter pres = new Presenter(new Model());
 		pres.addView(new View());
 		
 		//EventQueue.invokeLater( );

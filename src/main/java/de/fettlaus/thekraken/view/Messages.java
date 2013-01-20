@@ -18,7 +18,7 @@ public class Messages {
 	// Bundle access
 	//
 	////////////////////////////////////////////////////////////////////////////
-	private static final String BUNDLE_NAME = "de.fettlaus.thekraken.view.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
 	private static ResourceBundle RESOURCE_BUNDLE = loadBundle();
 	private static ResourceBundle loadBundle() {
 		return ResourceBundle.getBundle(BUNDLE_NAME);

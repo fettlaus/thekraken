@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.fettlaus.thekraken.tests;
+package de.fettlaus.thekraken.test;
 
 import static org.junit.Assert.*;
 
@@ -10,16 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.fettlaus.thekraken.Presenter;
-import de.fettlaus.thekraken.tests.mocks.MockModel;
-import de.fettlaus.thekraken.tests.mocks.MockView;
 
 /**
  * @author bachelor
  *
  */
 public class PresenterTest {
-	MockModel model;
-	MockView view;
+	MockModelTest model;
+	MockViewTest view;
 	Presenter pres;
 
 	/**
@@ -27,8 +25,8 @@ public class PresenterTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		model = new MockModel();
-		view = new MockView();
+		model = new MockModelTest();
+		view = new MockViewTest();
 		pres = new Presenter(model);
 		pres.addView(view);
 	}
@@ -43,7 +41,7 @@ public class PresenterTest {
 	@Test
 	public void test() {
 		
-		fail("Not yet implemented");
+		//fail("Not yet implemented");
 	}
 
 }

@@ -1,9 +1,9 @@
-package de.fettlaus.thekraken.tests.mocks;
+package de.fettlaus.thekraken.test;
 
 import de.fettlaus.thekraken.ViewInterface;
 import de.fettlaus.thekraken.events.KrakenListener;
 
-public class MockView implements ViewInterface {
+public class MockViewTest implements ViewInterface {
 
 	public void run() {
 		// TODO Auto-generated method stub
