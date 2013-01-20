@@ -129,11 +129,11 @@ public class View implements ViewInterface{
 			}
 		});
 		menu_language.add(radio_language_de_de);
-		switch(Locale.getDefault().getLanguage()){
-		case "de": radio_language_de_de.setSelected(true);
-			break;
-		default: radio_language_en_us.setSelected(true);
-			break;
+		String lang = Locale.getDefault().getLanguage();
+		if(lang.equals("de")){
+			radio_language_de_de.setSelected(true);
+		}else{
+			radio_language_en_us.setSelected(true);
 		}
 		menuItem_file_close = new JMenuItem(); //$NON-NLS-1$
 		menu_file.add(menuItem_file_close);
@@ -413,7 +413,6 @@ public class View implements ViewInterface{
 
 	public void subscribePingButtonClicked(final KrakenListener ev) {
 		button_connect.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				ev.fireEvent(View.this);
 			}
@@ -434,7 +433,6 @@ public class View implements ViewInterface{
 
 	public void subscribeDisconnectButtonClicked(final KrakenListener ev) {
 		button_disconnect.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					ev.fireEvent(View.this);
 			}
@@ -444,7 +442,6 @@ public class View implements ViewInterface{
 
 	public void subscribeTimesyncButtonClicked(final KrakenListener ev) {
 		button_synchronize.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				ev.fireEvent(View.this);
 			}
@@ -487,12 +484,10 @@ public class View implements ViewInterface{
 		
 	}
 
-	@Override
 	public String getNewClientIP() {
 		return textField_connect.getText();
 	}
 
-	@Override
 	public String getNewClientPort() {
 		return textField_port.getText();
 	}
