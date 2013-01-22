@@ -1,16 +1,16 @@
 package de.fettlaus.thekraken.events;
 
-import de.fettlaus.thekraken.ModelInterface;
-import de.fettlaus.thekraken.ViewInterface;
+import de.fettlaus.thekraken.model.Model;
+import de.fettlaus.thekraken.view.View;
 
 public class ConnectClientEvent extends KrakenListener{
 
-	public ConnectClientEvent(ModelInterface model) {
+	public ConnectClientEvent(Model model) {
 		super(model);
 	}
 
 	@Override
-	public void fireEvent(ViewInterface view) {
+	public void fireEvent(View view) {
 		view.setNotification("Verbindung herstellen!");
 		view.addLogmessage("000", "Von", "Text!");
 		view.addUARTMessage("00", "Von", "Auch Text!");

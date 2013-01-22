@@ -1,13 +1,13 @@
 package de.fettlaus.thekraken.events;
 
-import de.fettlaus.thekraken.ModelInterface;
-import de.fettlaus.thekraken.ViewInterface;
+import de.fettlaus.thekraken.model.Model;
+import de.fettlaus.thekraken.view.View;
 
 public abstract class KrakenListener {
-	ModelInterface model;
-	public KrakenListener(ModelInterface model) {
+	Model model;
+	public KrakenListener(Model model) {
 		this.model = model;
 	}
-	abstract public void fireEvent(ViewInterface view);
+	abstract public void fireEvent(View view);
 
 }
