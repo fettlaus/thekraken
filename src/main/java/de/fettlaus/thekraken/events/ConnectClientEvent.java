@@ -3,7 +3,7 @@ package de.fettlaus.thekraken.events;
 import de.fettlaus.thekraken.model.Model;
 import de.fettlaus.thekraken.view.View;
 
-public class ConnectClientEvent extends KrakenListener{
+public class ConnectClientEvent extends ViewListener{
 
 	public ConnectClientEvent(Model model) {
 		super(model);

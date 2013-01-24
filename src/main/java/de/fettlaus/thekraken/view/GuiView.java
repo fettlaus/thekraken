@@ -2,7 +2,7 @@ package de.fettlaus.thekraken.view;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import de.fettlaus.thekraken.events.KrakenListener;
+import de.fettlaus.thekraken.events.ViewListener;
 
 import java.awt.GridBagLayout;
 import javax.swing.JTextField;
@@ -410,7 +410,7 @@ public class GuiView implements View{
 				
 	}
 
-	public void subscribePingButtonClicked(final KrakenListener ev) {
+	public void subscribePingButtonClicked(final ViewListener ev) {
 		button_connect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ev.fireEvent(GuiView.this);
@@ -418,11 +418,11 @@ public class GuiView implements View{
 		});
 	}
 
-	public void subscribeSendMessage(KrakenListener ev) {
+	public void subscribeSendMessage(ViewListener ev) {
 		// TODO Message sending
 	}
 
-	public void subscribeConnectButtonClicked(final KrakenListener ev) {
+	public void subscribeConnectButtonClicked(final ViewListener ev) {
 		button_connect.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 					ev.fireEvent(GuiView.this);
@@ -430,7 +430,7 @@ public class GuiView implements View{
 		});
 	}
 
-	public void subscribeDisconnectButtonClicked(final KrakenListener ev) {
+	public void subscribeDisconnectButtonClicked(final ViewListener ev) {
 		button_disconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 					ev.fireEvent(GuiView.this);
@@ -439,7 +439,7 @@ public class GuiView implements View{
 		
 	}
 
-	public void subscribeTimesyncButtonClicked(final KrakenListener ev) {
+	public void subscribeTimesyncButtonClicked(final ViewListener ev) {
 		button_synchronize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ev.fireEvent(GuiView.this);

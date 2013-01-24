@@ -3,24 +3,23 @@
  */
 package de.fettlaus.thekraken.model;
 
-import java.net.InetAddress;
 import java.util.List;
 
-import de.fettlaus.thekraken.events.KrakenListener;
+import de.fettlaus.thekraken.events.ModelListener;
 
 /**
  * @author bachelor
  *
  */
 public interface Model {
-	void subscribeNewConnection(KrakenListener lst);
-	void subscribeNewMessage(KrakenListener lst);
-	void subscribeNewUART(KrakenListener lst);
+	void subscribeNewConnection(ModelListener lst);
+	void subscribeNewMessage(ModelListener lst);
+	void subscribeNewUART(ModelListener lst);
 	
 	
 	List<Connection> getConnections();
 	Connection getConnection(int index);
 	void synchronizeClients();
-	void newConnection(InetAddress ip, int port);
+	void newConnection(String ip, int port);
 
 }

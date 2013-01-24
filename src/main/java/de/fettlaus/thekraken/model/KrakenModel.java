@@ -1,27 +1,34 @@
 package de.fettlaus.thekraken.model;
 
-import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
-import de.fettlaus.thekraken.events.KrakenListener;
+import de.fettlaus.thekraken.events.ModelListener;
 
 
 public class KrakenModel implements Model {
+	ArrayList<Connection> connections;
+	ModelListener newConnectionListener;
+	BlockingQueue<Message> messages;
+	public KrakenModel(){
+		connections = new ArrayList<Connection>();
+	}
 
 	@Override
-	public void subscribeNewConnection(KrakenListener lst) {
+	public void subscribeNewConnection(ModelListener lst) {
+		newConnectionListener = lst;
+		
+	}
+
+	@Override
+	public void subscribeNewMessage(ModelListener lst) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void subscribeNewMessage(KrakenListener lst) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void subscribeNewUART(KrakenListener lst) {
+	public void subscribeNewUART(ModelListener lst) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -39,8 +46,13 @@ public class KrakenModel implements Model {
 	}
 
 	@Override
-	public void newConnection(InetAddress ip, int port) {
-		// TODO Auto-generated method stub
+	public void newConnection(String ip, int port) {
+		Connection con = new ThreadedConnection(ip, port);
+		if(con.connect() != false){
+			connections.add(con);
+			newConnectionListener.fireEvent(this);
+		}else{
+		}
 		
 	}
 

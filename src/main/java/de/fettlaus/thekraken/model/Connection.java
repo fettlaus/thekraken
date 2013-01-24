@@ -5,4 +5,5 @@ public interface Connection {
 	int getPort();
 	void sendMessage(Message msg);
 	void sendPing();
+	boolean connect();
 }
