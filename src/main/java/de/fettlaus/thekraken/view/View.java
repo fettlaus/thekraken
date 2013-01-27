@@ -1,17 +1,17 @@
 package de.fettlaus.thekraken.view;
 
-import de.fettlaus.thekraken.events.ViewListener;
+import java.awt.event.ActionListener;
 
 /**
  * @author bachelor
  *
  */
 public interface View{
-	void subscribePingButtonClicked(final ViewListener ev);
-	void subscribeSendMessage(final ViewListener ev);
-	void subscribeConnectButtonClicked(final ViewListener ev);
-	void subscribeDisconnectButtonClicked(final ViewListener ev);
-	void subscribeTimesyncButtonClicked(final ViewListener ev);
+	void subscribePingButtonClicked(final ActionListener ev);
+	void subscribeSendMessage(final ActionListener ev);
+	void subscribeConnectButtonClicked(final ActionListener ev);
+	void subscribeDisconnectButtonClicked(final ActionListener ev);
+	void subscribeTimesyncButtonClicked(final ActionListener ev);
 	
 	void addLogmessage(String timestamp, String target, String msg);
 	void addUARTMessage(String timestamp, String target, String msg);

@@ -5,9 +5,10 @@ import de.fettlaus.thekraken.view.View;
 
 public abstract class ViewListener {
 	Model model;
-	public ViewListener(Model model) {
+	View view;
+	public ViewListener(Model model, View view) {
 		this.model = model;
+		this.view = view;
 	}
-	abstract public void fireEvent(View view);
 
 }

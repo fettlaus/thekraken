@@ -410,41 +410,25 @@ public class GuiView implements View{
 				
 	}
 
-	public void subscribePingButtonClicked(final ViewListener ev) {
-		button_connect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ev.fireEvent(GuiView.this);
-			}
-		});
+	public void subscribePingButtonClicked(final ActionListener ev) {
+		button_connect.addActionListener(ev);
 	}
 
-	public void subscribeSendMessage(ViewListener ev) {
+	public void subscribeSendMessage(ActionListener ev) {
 		// TODO Message sending
 	}
 
-	public void subscribeConnectButtonClicked(final ViewListener ev) {
-		button_connect.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-					ev.fireEvent(GuiView.this);
-			}		
-		});
+	public void subscribeConnectButtonClicked(final ActionListener ev) {
+		button_connect.addActionListener(ev);
 	}
 
-	public void subscribeDisconnectButtonClicked(final ViewListener ev) {
-		button_disconnect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-					ev.fireEvent(GuiView.this);
-			}
-		});
+	public void subscribeDisconnectButtonClicked(final ActionListener ev) {
+		button_disconnect.addActionListener(ev);
 		
 	}
 
-	public void subscribeTimesyncButtonClicked(final ViewListener ev) {
-		button_synchronize.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ev.fireEvent(GuiView.this);
-			}
-		});
+	public void subscribeTimesyncButtonClicked(final ActionListener ev) {
+		button_synchronize.addActionListener(ev);
 	}
 
 	public void setClients(String[] clients) {
@@ -490,4 +474,5 @@ public class GuiView implements View{
 	public String getNewClientPort() {
 		return textField_port.getText();
 	}
+
 }

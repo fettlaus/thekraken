@@ -22,7 +22,7 @@ public class Presenter {
 	ArrayList<View> views;
 	
 	private void connectEvents(View view){
-		view.subscribeConnectButtonClicked(new ConnectClientEvent(model));
+		view.subscribeConnectButtonClicked(new ConnectClientEvent(model,view));
 	}
 	
 	public void addView(View view){

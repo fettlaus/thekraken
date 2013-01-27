@@ -1,18 +1,25 @@
 package de.fettlaus.thekraken.model;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import de.fettlaus.thekraken.events.ModelListener;
 
 
 public class KrakenModel implements Model {
+	public static final int BUFFER_SIZE = 20;
 	ArrayList<Connection> connections;
 	ModelListener newConnectionListener;
+	ModelListener newMessageListener;
 	BlockingQueue<Message> messages;
+	MessageDispatcher disp;
 	public KrakenModel(){
 		connections = new ArrayList<Connection>();
+		messages = new ArrayBlockingQueue<Message>(BUFFER_SIZE);
 	}
 
 	@Override
@@ -23,8 +30,8 @@ public class KrakenModel implements Model {
 
 	@Override
 	public void subscribeNewMessage(ModelListener lst) {
-		// TODO Auto-generated method stub
-		
+		disp = new MessageDispatcher(messages,lst);
+		new Thread(disp).start();
 	}
 
 	@Override
@@ -35,8 +42,7 @@ public class KrakenModel implements Model {
 
 	@Override
 	public List<Connection> getConnections() {
-		// TODO Auto-generated method stub
-		return null;
+		return connections;
 	}
 
 	@Override
@@ -46,12 +52,11 @@ public class KrakenModel implements Model {
 	}
 
 	@Override
-	public void newConnection(String ip, int port) {
-		Connection con = new ThreadedConnection(ip, port);
+	public void newConnection(String ip, int port) throws UnknownHostException, IOException {
+		Connection con = new ThreadedConnection(ip, port,messages);
 		if(con.connect() != false){
 			connections.add(con);
-			newConnectionListener.fireEvent(this);
-		}else{
+			//newConnectionListener.fireEvent(this);
 		}
 		
 	}

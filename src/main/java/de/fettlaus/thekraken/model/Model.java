@@ -3,6 +3,8 @@
  */
 package de.fettlaus.thekraken.model;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import de.fettlaus.thekraken.events.ModelListener;
@@ -20,6 +22,6 @@ public interface Model {
 	List<Connection> getConnections();
 	Connection getConnection(int index);
 	void synchronizeClients();
-	void newConnection(String ip, int port);
+	void newConnection(String ip, int port) throws UnknownHostException, IOException;
 
 }
