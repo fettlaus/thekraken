@@ -1,5 +1,10 @@
 package de.fettlaus.thekraken.model;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.socket.oio.OioEventLoopGroup;
+import io.netty.channel.socket.oio.OioSocketChannel;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -48,6 +53,17 @@ public class ThreadedConnection implements Connection, Runnable{
 
 	@Override
 	public boolean connect() throws UnknownHostException, IOException {
+		Bootstrap b = new Bootstrap();
+		b.group(new OioEventLoopGroup())
+		.channel(OioSocketChannel.class)
+		.remoteAddress(this.address, this.port)
+		.handler(new KrakenClientInitializer());
+		try {
+			ChannelFuture f = b.connect().sync();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 			echoSocket = new Socket();
             echoSocket.connect(new InetSocketAddress(this.address, this.port),4000);
             out = new BufferedOutputStream(new DataOutputStream(echoSocket.getOutputStream()));
