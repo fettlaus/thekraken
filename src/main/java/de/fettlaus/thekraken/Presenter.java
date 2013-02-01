@@ -23,6 +23,7 @@ public class Presenter {
 	
 	private void connectEvents(View view){
 		view.subscribeConnectButtonClicked(new ConnectClientEvent(model,view));
+		model.subscribeNewMessage(null);
 	}
 	
 	public void addView(View view){

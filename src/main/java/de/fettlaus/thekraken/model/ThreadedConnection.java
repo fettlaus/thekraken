@@ -5,6 +5,8 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,8 +14,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class ThreadedConnection implements Connection, Runnable{
 	Socket echoSocket = null;
-    BufferedOutputStream out = null;
-    BufferedInputStream in = null;
+    DataOutputStream out = null;
+    DataInputStream in = null;
     BlockingQueue<Message> messages = null;
     String address = null;
     int port;
@@ -49,9 +51,10 @@ public class ThreadedConnection implements Connection, Runnable{
 	@Override
 	public boolean connect() throws UnknownHostException, IOException {
 			echoSocket = new Socket();
+			echoSocket.setTcpNoDelay(true);
             echoSocket.connect(new InetSocketAddress(this.address, this.port),4000);
-            out = new BufferedOutputStream(new DataOutputStream(echoSocket.getOutputStream()));
-            in = new BufferedInputStream(new DataInputStream(echoSocket.getInputStream()));
+            out = new DataOutputStream(new BufferedOutputStream(echoSocket.getOutputStream()));
+            in = new DataInputStream(new BufferedInputStream(echoSocket.getInputStream()));
 
 		
 		// TODO Auto-generated method stub
@@ -66,20 +69,19 @@ public class ThreadedConnection implements Connection, Runnable{
 		while(true){
 			msg = new KrakenMessage();
 			try {
-				in.read(msg.getHeader(), 0, 7);
-				int length = msg.getLength();
-				if(length > 0){
-					in.read(msg.getBody(),0,length);
-				}
+				msg.read(in);
+				msg.setConnection(this);
 				messages.add(msg);
-				
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}	
 	}
 	
-	private void sendMessage(Message.MessageType type, String msg){
+	private void sendMessage(MessageType type, String msg){
 		
 	}
 

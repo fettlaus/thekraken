@@ -11,8 +11,7 @@ public class MessageDispatcher implements Runnable{
 	private ModelListener lst;
 
 	public MessageDispatcher(BlockingQueue<Message> messages, ModelListener lst) {
-		this.messages = messages;
-		
+		this.messages = messages;	
 	}
 
 	@Override
@@ -21,7 +20,8 @@ public class MessageDispatcher implements Runnable{
 		while(true){
 			try {
 				msg = messages.take();
-				lst.fireEvent(null);
+				System.out.println(msg.toString());
+				//lst.fireEvent(null);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
