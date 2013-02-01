@@ -5,15 +5,21 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public interface Message {
-public static final int HEADER_LENGTH = 7;
-public static final int MAX_BODY_LENGTH = 512;
-	MessageType getType();
+	public static final int HEADER_LENGTH = 7;
+	public static final int MAX_BODY_LENGTH = 512;
+
 	Connection getConnection();
-	void setConnection(Connection conn);
-	long getTimestamp();
+
 	String getMessage();
-	void read(DataInputStream arg0) throws IOException, ClassNotFoundException,
-			IllegalArgumentException;
+
+	long getTimestamp();
+
+	MessageType getType();
+
+	void read(DataInputStream arg0) throws IOException, ClassNotFoundException, IllegalArgumentException;
+
+	void setConnection(Connection conn);
+
 	void write(DataOutputStream arg0) throws IOException;
 
 }

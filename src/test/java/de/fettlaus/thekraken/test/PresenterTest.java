@@ -3,7 +3,8 @@
  */
 package de.fettlaus.thekraken.test;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +16,7 @@ import de.fettlaus.thekraken.view.View;
 
 /**
  * @author bachelor
- *
+ * 
  */
 public class PresenterTest {
 	Model model;
@@ -29,7 +30,7 @@ public class PresenterTest {
 	public void setUp() throws Exception {
 		model = mock(Model.class);
 		view = mock(View.class);
-		pres = new Presenter(model,view);
+		pres = new Presenter(model, view);
 	}
 
 	/**
@@ -43,7 +44,7 @@ public class PresenterTest {
 	public void test() {
 		model.getConnection(0);
 		verify(model).getConnection(0);
-		//fail("Not yet implemented");
+		// fail("Not yet implemented");
 	}
 
 }
