@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 public interface Connection {
+	void close() throws IOException;
+
 	boolean connect() throws UnknownHostException, IOException;
 
 	String getAddress();

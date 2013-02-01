@@ -14,6 +14,8 @@ import de.fettlaus.thekraken.events.ModelListener;
  * 
  */
 public interface Model {
+	void closeConnection(Connection con) throws IOException;
+
 	Connection getConnection(int index);
 
 	List<Connection> getConnections();

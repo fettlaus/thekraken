@@ -2,6 +2,7 @@ package de.fettlaus.thekraken.model;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 
 import com.google.common.base.Charsets;
@@ -51,7 +52,7 @@ public class KrakenMessage implements Message {
 	}
 
 	@Override
-	public void read(DataInputStream arg0) throws IOException, ClassNotFoundException, IllegalArgumentException {
+	public void read(DataInputStream arg0) throws IOException, EOFException {
 
 		type = MessageType.fromInt(arg0.readUnsignedByte());
 

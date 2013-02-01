@@ -26,6 +26,12 @@ public class ThreadedConnection extends Observable implements Connection, Runnab
 	}
 
 	@Override
+	public void close() throws IOException {
+		echoSocket.close();
+
+	}
+
+	@Override
 	public boolean connect() throws UnknownHostException, IOException {
 		echoSocket = new Socket();
 		echoSocket.setTcpNoDelay(true);
@@ -52,17 +58,19 @@ public class ThreadedConnection extends Observable implements Connection, Runnab
 	public void run() {
 		// TODO listen on socket
 		Message msg;
-		while (true) {
+		boolean running = true;
+		while (running) {
 			msg = new KrakenMessage();
 			try {
 				msg.read(in);
 				msg.setConnection(this);
 				messages.add(msg);
 			} catch (final IOException e) {
+				running = false;
 				setChanged();
 				notifyObservers(this); // connection lost
-				e.printStackTrace();
 			} catch (final ClassNotFoundException e) {
+				running = false;
 				e.printStackTrace();
 			}
 		}
