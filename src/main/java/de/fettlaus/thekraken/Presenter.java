@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Observable;
 
+import javax.swing.SwingWorker;
+
 import de.fettlaus.thekraken.events.ModelListener;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.Message;
@@ -31,21 +33,43 @@ public class Presenter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int port;
-				String host;
-				try {
-					port = Integer.parseInt(view.getNewClientPort());
-					host = view.getNewClientIP();
-					model.newConnection(host, port);
-					view.setNotification("Connection established!");
-				} catch (final NumberFormatException e1) {
-					view.setNotification("Wrong Port specified");
-				} catch (final UnknownHostException e2) {
-					view.setNotification("Can't find host!");
-				} catch (final IOException e3) {
-					view.setNotification("Can't establish connection");
-				}
-				updateClientlist();
+				new SwingWorker<String[], Void>() {
+					@Override
+					public String[] doInBackground() {
+						int port;
+						String host;
+						try {
+							port = Integer.parseInt(view.getNewClientPort());
+							host = view.getNewClientIP();
+							model.newConnection(host, port);
+							view.setNotification("Connection established!");
+						} catch (final NumberFormatException e1) {
+							view.setNotification("Wrong Port specified");
+						} catch (final UnknownHostException e2) {
+							view.setNotification("Can't find host!");
+						} catch (final IOException e3) {
+							view.setNotification("Can't establish connection");
+						}
+						return getClientlist();
+					}
+
+					@Override
+					public void done() {
+						try {
+							view.setClients(get());
+						} catch (final InterruptedException ignore) {
+						} catch (final java.util.concurrent.ExecutionException e) {
+							String why = null;
+							final Throwable cause = e.getCause();
+							if (cause != null) {
+								why = cause.getMessage();
+							} else {
+								why = e.getMessage();
+							}
+							System.err.println("Error retrieving file: " + why);
+						}
+					}
+				}.execute();
 
 			}
 		});
@@ -73,13 +97,13 @@ public class Presenter {
 
 			@Override
 			public void update(Observable o, Object arg) {
-				updateClientlist();
+				view.setClients(getClientlist());
 
 			}
 		});
 	}
 
-	private void updateClientlist() {
+	private String[] getClientlist() {
 		final List<Connection> connections = model.getConnections();
 		final int connections_size = connections.size();
 		final String[] connections_txt = new String[connections_size];
@@ -87,6 +111,6 @@ public class Presenter {
 			final Connection this_con = connections.get(i);
 			connections_txt[i] = this_con.getAddress() + ":" + this_con.getPort();
 		}
-		view.setClients(connections_txt);
+		return connections_txt;
 	}
 }
