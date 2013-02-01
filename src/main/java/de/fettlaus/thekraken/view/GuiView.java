@@ -60,6 +60,9 @@ public class GuiView implements View {
 	private JLabel label_port;
 	private JLabel label_targets;
 	private JList<String> list_targets;
+	private JPanel panel_common;
+	private JTextField textField_message;
+	private JButton button_message;
 
 	/**
 	 * Create the application.
@@ -159,7 +162,7 @@ public class GuiView implements View {
 		form_main.setContentPane(panel_main);
 		final GridBagLayout gbl_panel_main = new GridBagLayout();
 		gbl_panel_main.columnWeights = new double[] { 1.0, 0.0, 0.0 };
-		gbl_panel_main.rowWeights = new double[] { 0.0, 1.0, 0.0, 0.0 };
+		gbl_panel_main.rowWeights = new double[] { 0.0, 1.0, 0.0 };
 		panel_main.setLayout(gbl_panel_main);
 
 		final JMenuBar menuBar_main = new JMenuBar();
@@ -167,7 +170,7 @@ public class GuiView implements View {
 		final GridBagConstraints gbc_menuBar_main = new GridBagConstraints();
 		gbc_menuBar_main.anchor = GridBagConstraints.NORTH;
 		gbc_menuBar_main.fill = GridBagConstraints.BOTH;
-		gbc_menuBar_main.insets = new Insets(0, 0, 5, 5);
+		gbc_menuBar_main.insets = new Insets(0, 0, 5, 0);
 		gbc_menuBar_main.gridwidth = 3;
 		gbc_menuBar_main.gridx = 0;
 		gbc_menuBar_main.gridy = 0;
@@ -230,9 +233,8 @@ public class GuiView implements View {
 		main_separator.setPreferredSize(new Dimension(2, 0));
 		main_separator.setOrientation(SwingConstants.VERTICAL);
 		final GridBagConstraints gbc_main_separator = new GridBagConstraints();
-		gbc_main_separator.gridheight = 2;
 		gbc_main_separator.fill = GridBagConstraints.VERTICAL;
-		gbc_main_separator.insets = new Insets(4, 4, 4, 4);
+		gbc_main_separator.insets = new Insets(4, 4, 5, 5);
 		gbc_main_separator.gridx = 1;
 		gbc_main_separator.gridy = 1;
 		panel_main.add(main_separator, gbc_main_separator);
@@ -240,8 +242,7 @@ public class GuiView implements View {
 		final JPanel panel_targets = new JPanel();
 		final GridBagConstraints gbc_panel_targets = new GridBagConstraints();
 		gbc_panel_targets.fill = GridBagConstraints.VERTICAL;
-		gbc_panel_targets.gridheight = 2;
-		gbc_panel_targets.insets = new Insets(5, 5, 5, 5);
+		gbc_panel_targets.insets = new Insets(2, 2, 2, 2);
 		gbc_panel_targets.gridx = 2;
 		gbc_panel_targets.gridy = 1;
 		panel_main.add(panel_targets, gbc_panel_targets);
@@ -310,7 +311,7 @@ public class GuiView implements View {
 		scrollPane_targets.setMaximumSize(new Dimension(30, 32767));
 		scrollPane_targets.setPreferredSize(new Dimension(30, 3));
 		final GridBagConstraints gbc_scrollPane_targets = new GridBagConstraints();
-		gbc_scrollPane_targets.insets = new Insets(2, 2, 5, 2);
+		gbc_scrollPane_targets.insets = new Insets(2, 2, 0, 2);
 		gbc_scrollPane_targets.weighty = 1.0;
 		gbc_scrollPane_targets.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_targets.gridwidth = 3;
@@ -391,12 +392,12 @@ public class GuiView implements View {
 
 		final JPanel panel_status = new JPanel();
 		final GridBagConstraints gbc_panel_status = new GridBagConstraints();
-		gbc_panel_status.insets = new Insets(5, 5, 5, 5);
+		gbc_panel_status.insets = new Insets(2, 2, 2, 2);
 		gbc_panel_status.anchor = GridBagConstraints.NORTH;
 		gbc_panel_status.fill = GridBagConstraints.HORIZONTAL;
 		gbc_panel_status.gridwidth = 3;
 		gbc_panel_status.gridx = 0;
-		gbc_panel_status.gridy = 3;
+		gbc_panel_status.gridy = 2;
 		panel_main.add(panel_status, gbc_panel_status);
 		final GridBagLayout gbl_panel_status = new GridBagLayout();
 		gbl_panel_status.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
@@ -413,15 +414,29 @@ public class GuiView implements View {
 		panel_status.add(textField_status, gbc_textField_status);
 		textField_status.setColumns(10);
 
+		panel_common = new JPanel();
+		final GridBagConstraints gbc_panel_common = new GridBagConstraints();
+		gbc_panel_common.insets = new Insets(2, 2, 2, 2);
+		gbc_panel_common.fill = GridBagConstraints.BOTH;
+		gbc_panel_common.gridx = 0;
+		gbc_panel_common.gridy = 1;
+		panel_main.add(panel_common, gbc_panel_common);
+		final GridBagLayout gbl_panel_common = new GridBagLayout();
+		gbl_panel_common.columnWeights = new double[] { 1.0, 0.0 };
+		gbl_panel_common.rowWeights = new double[] { 0.0, 0.0, 0.0 };
+		panel_common.setLayout(gbl_panel_common);
+
 		tabbedPane_messages = new JTabbedPane(SwingConstants.TOP);
 		final GridBagConstraints gbc_tabbedPane_messages = new GridBagConstraints();
-		gbc_tabbedPane_messages.weighty = 0.9;
+		gbc_tabbedPane_messages.gridwidth = 2;
+		gbc_tabbedPane_messages.weighty = 1.0;
 		gbc_tabbedPane_messages.weightx = 1.0;
-		gbc_tabbedPane_messages.insets = new Insets(0, 5, 5, 5);
 		gbc_tabbedPane_messages.fill = GridBagConstraints.BOTH;
+		gbc_tabbedPane_messages.anchor = GridBagConstraints.NORTHWEST;
+		gbc_tabbedPane_messages.insets = new Insets(2, 2, 2, 2);
 		gbc_tabbedPane_messages.gridx = 0;
-		gbc_tabbedPane_messages.gridy = 1;
-		panel_main.add(tabbedPane_messages, gbc_tabbedPane_messages);
+		gbc_tabbedPane_messages.gridy = 0;
+		panel_common.add(tabbedPane_messages, gbc_tabbedPane_messages);
 
 		final JPanel panel_messages = new JPanel();
 		tabbedPane_messages.addTab(Messages.getString("View.panel_messages.title"), null, panel_messages, null); //$NON-NLS-1$ 
@@ -452,14 +467,32 @@ public class GuiView implements View {
 		textArea_uart.setColumns(2);
 		scrollPane_uart.setViewportView(textArea_uart);
 
-		button_synchronize = new JButton();
+		textField_message = new JTextField();
+		textField_message.setText(Messages.getString("GuiView.textField.text")); //$NON-NLS-1$
+		final GridBagConstraints gbc_textField_message = new GridBagConstraints();
+		gbc_textField_message.insets = new Insets(2, 2, 2, 2);
+		gbc_textField_message.fill = GridBagConstraints.BOTH;
+		gbc_textField_message.gridx = 0;
+		gbc_textField_message.gridy = 1;
+		panel_common.add(textField_message, gbc_textField_message);
+		textField_message.setColumns(10);
 
+		button_message = new JButton(Messages.getString("View.btn_message.text")); //$NON-NLS-1$
+		final GridBagConstraints gbc_btn_message = new GridBagConstraints();
+		gbc_btn_message.insets = new Insets(2, 2, 2, 2);
+		gbc_btn_message.gridx = 1;
+		gbc_btn_message.gridy = 1;
+		panel_common.add(button_message, gbc_btn_message);
+
+		button_synchronize = new JButton();
 		final GridBagConstraints gbc_button_synchronize = new GridBagConstraints();
-		gbc_button_synchronize.fill = GridBagConstraints.HORIZONTAL;
-		gbc_button_synchronize.insets = new Insets(0, 5, 5, 5);
+		gbc_button_synchronize.insets = new Insets(2, 2, 2, 2);
+		gbc_button_synchronize.fill = GridBagConstraints.BOTH;
+		gbc_button_synchronize.gridwidth = 2;
+		gbc_button_synchronize.anchor = GridBagConstraints.WEST;
 		gbc_button_synchronize.gridx = 0;
 		gbc_button_synchronize.gridy = 2;
-		panel_main.add(button_synchronize, gbc_button_synchronize);
+		panel_common.add(button_synchronize, gbc_button_synchronize);
 		load_strings();
 		form_main.setVisible(true);
 
@@ -470,6 +503,7 @@ public class GuiView implements View {
 		button_disconnect.setText(Messages.getString("View.button_disconnect.text"));
 		button_ping.setText(Messages.getString("View.button_ping.text"));
 		button_synchronize.setText(Messages.getString("View.button_synchronize.text"));
+		button_message.setText(Messages.getString("View.btn_message.text"));
 		form_main.setTitle(Messages.getString("View.form_main.title"));
 		label_addtarget.setText(Messages.getString("View.label_addtarget.text"));
 		label_ip.setText(Messages.getString("View.label_ip.text"));
