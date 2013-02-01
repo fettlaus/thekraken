@@ -5,14 +5,13 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 
-public class ThreadedConnection implements Connection, Runnable{
+public class ThreadedConnection extends Observable implements Connection, Runnable{
 	Socket echoSocket = null;
     DataOutputStream out = null;
     DataInputStream in = null;
@@ -73,9 +72,10 @@ public class ThreadedConnection implements Connection, Runnable{
 				msg.setConnection(this);
 				messages.add(msg);
 			} catch (IOException e) {
+				setChanged();
+				notifyObservers(this); // connection lost
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}	

@@ -1,16 +1,12 @@
 package de.fettlaus.thekraken.model;
 
+import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 
-import de.fettlaus.thekraken.events.ModelListener;
-import de.fettlaus.thekraken.view.Messages;
-
-public class MessageDispatcher implements Runnable{
+public class MessageDispatcher extends Observable implements Runnable{
 
 	private BlockingQueue<Message> messages;
-	private ModelListener lst;
-
-	public MessageDispatcher(BlockingQueue<Message> messages, ModelListener lst) {
+	public MessageDispatcher(BlockingQueue<Message> messages) {
 		this.messages = messages;	
 	}
 
@@ -20,10 +16,9 @@ public class MessageDispatcher implements Runnable{
 		while(true){
 			try {
 				msg = messages.take();
-				System.out.println(msg.toString());
-				//lst.fireEvent(null);
+				setChanged();
+				notifyObservers(msg);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

@@ -13,8 +13,7 @@ import de.fettlaus.thekraken.events.ModelListener;
 public class KrakenModel implements Model {
 	public static final int BUFFER_SIZE = 20;
 	ArrayList<Connection> connections;
-	ModelListener newConnectionListener;
-	ModelListener newMessageListener;
+	ModelListener connectionLostObserver;
 	BlockingQueue<Message> messages;
 	MessageDispatcher disp;
 	public KrakenModel(){
@@ -23,21 +22,10 @@ public class KrakenModel implements Model {
 	}
 
 	@Override
-	public void subscribeNewConnection(ModelListener lst) {
-		newConnectionListener = lst;
-		
-	}
-
-	@Override
 	public void subscribeNewMessage(ModelListener lst) {
-		disp = new MessageDispatcher(messages,lst);
+		disp = new MessageDispatcher(messages);
+		disp.addObserver(lst);
 		new Thread(disp).start();
-	}
-
-	@Override
-	public void subscribeNewUART(ModelListener lst) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -53,8 +41,9 @@ public class KrakenModel implements Model {
 
 	@Override
 	public void newConnection(String ip, int port) throws UnknownHostException, IOException {
-		Connection con = new ThreadedConnection(ip, port,messages);
+		ThreadedConnection con = new ThreadedConnection(ip, port,messages);
 		if(con.connect() != false){
+			con.addObserver(connectionLostObserver);
 			connections.add(con);
 			//newConnectionListener.fireEvent(this);
 		}
@@ -65,6 +54,11 @@ public class KrakenModel implements Model {
 	public Connection getConnection(int index) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void subscribeConnectionLost(ModelListener lst) {
+		this.connectionLostObserver = lst;
 	}
 
 }

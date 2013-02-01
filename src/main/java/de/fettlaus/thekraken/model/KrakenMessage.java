@@ -2,10 +2,7 @@ package de.fettlaus.thekraken.model;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.Externalizable;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import com.google.common.base.Charsets;
 
 public class KrakenMessage implements Message {
@@ -87,7 +84,6 @@ public class KrakenMessage implements Message {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return "Message("+type+","+body.length()+","+timestamp+")="+"\""+body+"\"";
 	}
 

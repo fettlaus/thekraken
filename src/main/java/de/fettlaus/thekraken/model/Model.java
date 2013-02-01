@@ -14,9 +14,10 @@ import de.fettlaus.thekraken.events.ModelListener;
  *
  */
 public interface Model {
-	void subscribeNewConnection(ModelListener lst);
+	//void subscribeNewConnection(ModelListener lst);
 	void subscribeNewMessage(ModelListener lst);
-	void subscribeNewUART(ModelListener lst);
+	//void subscribeNewUART(ModelListener lst);
+	void subscribeConnectionLost(ModelListener lst);
 	
 	
 	List<Connection> getConnections();

@@ -3,7 +3,6 @@ package de.fettlaus.thekraken.model;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 
 public interface Message {
 public static final int HEADER_LENGTH = 7;

@@ -29,8 +29,7 @@ public class PresenterTest {
 	public void setUp() throws Exception {
 		model = mock(Model.class);
 		view = mock(View.class);
-		pres = new Presenter(model);
-		pres.addView(view);
+		pres = new Presenter(model,view);
 	}
 
 	/**

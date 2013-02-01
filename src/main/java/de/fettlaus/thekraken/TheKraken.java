@@ -19,8 +19,7 @@ public class TheKraken {
 	public static void main(String[] args) throws InterruptedException {
 		//Locale.setDefault(Locale.GERMAN);
 		//Locale.setDefault(Locale.GERMANY);
-		Presenter pres = new Presenter(new KrakenModel());
-		pres.addView(new GuiView());
+		Presenter pres = new Presenter(new KrakenModel(),new GuiView());
 		
 		//EventQueue.invokeLater( );
 
