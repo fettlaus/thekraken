@@ -21,5 +21,7 @@ public interface Model {
 	void newConnection(String ip, int port) throws UnknownHostException, IOException;
 
 	void synchronizeClients();
+	
+	void broadcastMessage(Message msg);
 
 }

@@ -82,17 +82,22 @@ public class ThreadedConnection implements Connection, Runnable {
 
 	@Override
 	public void sendMessage(Message msg) {
-		// TODO Auto-generated method stub
-
+		try {
+			msg.write(out);
+		} catch (IOException e) {
+			if ((echoSocket != null) && !echoSocket.isClosed()) {
+				try {
+					close();
+				} catch (final IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override
 	public void sendPing() {
 		// TODO Auto-generated method stub
-
-	}
-
-	private void sendMessage(MessageType type, String msg) {
 
 	}
 

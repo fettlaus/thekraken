@@ -28,25 +28,32 @@ public class KrakenModel implements Model {
 	}
 
 	@Override
+	public void broadcastMessage(Message msg) {
+		for(Connection con: connections){
+			con.sendMessage(msg);
+		}
+
+	}
+
+	@Override
 	public void closeConnection(Connection con) throws IOException {
 		con.close();
-	}
-	
-	@Subscribe
-	public void handleClosedConnection(Connection con){
-		connections.remove(con);
-		EventBus.instance().post(connections);
 	}
 
 	@Override
 	public Connection getConnection(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return connections.get(index);
 	}
 
 	@Override
 	public List<Connection> getConnections() {
 		return connections;
+	}
+
+	@Subscribe
+	public void handleClosedConnection(Connection con) {
+		connections.remove(con);
+		EventBus.instance().post(connections);
 	}
 
 	@Override

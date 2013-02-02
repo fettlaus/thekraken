@@ -28,7 +28,7 @@ public class KrakenMessage implements Message {
 
 	public KrakenMessage(MessageType type, String message) {
 		// calc own timestamp
-		this(type, 0l, message);
+		this(type, 1l, message);
 	}
 
 	@Override
@@ -85,10 +85,11 @@ public class KrakenMessage implements Message {
 		final byte[] body_tmp = body.getBytes(Charsets.US_ASCII);
 		arg0.writeByte(type.getValue());
 		arg0.writeShort(body_tmp.length);
-		arg0.writeLong(timestamp);
+		arg0.writeInt((int) timestamp);
 		if (body_tmp.length > 0) {
 			arg0.write(body_tmp, 0, body_tmp.length);
 		}
+		arg0.flush();
 
 	}
 

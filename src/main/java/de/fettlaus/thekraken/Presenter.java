@@ -15,6 +15,7 @@ import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
 import de.fettlaus.thekraken.model.Connection;
+import de.fettlaus.thekraken.model.KrakenMessage;
 import de.fettlaus.thekraken.model.Message;
 import de.fettlaus.thekraken.model.MessageType;
 import de.fettlaus.thekraken.model.Model;
@@ -81,12 +82,18 @@ public class Presenter {
 			view.setNotification("Can't establish connection");
 		}
 	}
-	/*
+	
 	@Subscribe
 	public void handleSendMessage(SendMessageEvent evt){
-		
+		Message msg = new KrakenMessage(MessageType.MESS, evt.getMessage());
+		int index = evt.getTargetIndex();
+		if(index < 0){
+			model.broadcastMessage(msg);
+		}else{
+			model.getConnection(index).sendMessage(msg);
+		}
 	}
-	*/
+	
 
 	private void connectEvents() {
 		EventBus.instance().register(this);
