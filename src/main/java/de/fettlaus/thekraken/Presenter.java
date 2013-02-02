@@ -12,6 +12,8 @@ import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 
 import de.fettlaus.thekraken.events.EventBus;
+import de.fettlaus.thekraken.events.NewConnectionEvent;
+import de.fettlaus.thekraken.events.SendMessageEvent;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.Message;
 import de.fettlaus.thekraken.model.MessageType;
@@ -61,36 +63,33 @@ public class Presenter {
 			e.printStackTrace();
 		}
 	}
+	
+	@Subscribe
+	public void handleNewConnection(NewConnectionEvent evt){
+		int port;
+		String host;
+		try {
+			port = Integer.parseInt(evt.getPort());
+			host = evt.getAddress();
+			model.newConnection(host, port);
+			view.setNotification("Connection established!");
+		} catch (final NumberFormatException e1) {
+			view.setNotification("Wrong Port specified");
+		} catch (final UnknownHostException e2) {
+			view.setNotification("Can't find host!");
+		} catch (final IOException e3) {
+			view.setNotification("Can't establish connection");
+		}
+	}
+	/*
+	@Subscribe
+	public void handleSendMessage(SendMessageEvent evt){
+		
+	}
+	*/
 
 	private void connectEvents() {
 		EventBus.instance().register(this);
-		view.subscribeConnectButtonClicked(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new SwingWorker<Void, Void>() {
-					@Override
-					public Void doInBackground() {
-						int port;
-						String host;
-						try {
-							port = Integer.parseInt(view.getNewClientPort());
-							host = view.getNewClientIP();
-							model.newConnection(host, port);
-							view.setNotification("Connection established!");
-						} catch (final NumberFormatException e1) {
-							view.setNotification("Wrong Port specified");
-						} catch (final UnknownHostException e2) {
-							view.setNotification("Can't find host!");
-						} catch (final IOException e3) {
-							view.setNotification("Can't establish connection");
-						}
-						return null;
-					}
-				}.execute();
-
-			}
-		});
 
 	}
 
