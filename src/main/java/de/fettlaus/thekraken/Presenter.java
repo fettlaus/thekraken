@@ -5,11 +5,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Observable;
 
 import javax.swing.SwingWorker;
 
-import de.fettlaus.thekraken.events.ModelListener;
+import com.google.common.eventbus.DeadEvent;
+import com.google.common.eventbus.Subscribe;
+
+import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.Message;
 import de.fettlaus.thekraken.model.MessageType;
@@ -28,14 +30,47 @@ public class Presenter {
 		connectEvents();
 	}
 
+	@Subscribe
+	public void deadHandler(DeadEvent dead) {
+		System.out.println(dead.getEvent().toString());
+	}
+
+	@Subscribe
+	public void handleConnectionList(List<Connection> conlist) {
+		final int connections_size = conlist.size();
+		final String[] connections_txt = new String[connections_size];
+		for (int i = 0; i < connections_size; ++i) {
+			final Connection this_con = conlist.get(i);
+			connections_txt[i] = this_con.getAddress() + ":" + this_con.getPort();
+		}
+		view.setClients(connections_txt);
+	}
+
+	@Subscribe
+	public void handleNewMessage(Message msg) {
+		try {
+			final String timestamp = String.valueOf(msg.getTimestamp());
+			final String connection = msg.getConnection().getAddress();
+			final MessageType type = msg.getType();
+			if (type == MessageType.UART) {
+				view.addUARTMessage(timestamp, connection, msg.getMessage());
+			} else if (type == MessageType.MESS) {
+				view.addLogmessage(timestamp, connection, msg.getMessage());
+			}
+		} catch (final ClassCastException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void connectEvents() {
+		EventBus.instance().register(this);
 		view.subscribeConnectButtonClicked(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new SwingWorker<String[], Void>() {
+				new SwingWorker<Void, Void>() {
 					@Override
-					public String[] doInBackground() {
+					public Void doInBackground() {
 						int port;
 						String host;
 						try {
@@ -50,67 +85,13 @@ public class Presenter {
 						} catch (final IOException e3) {
 							view.setNotification("Can't establish connection");
 						}
-						return getClientlist();
-					}
-
-					@Override
-					public void done() {
-						try {
-							view.setClients(get());
-						} catch (final InterruptedException ignore) {
-						} catch (final java.util.concurrent.ExecutionException e) {
-							String why = null;
-							final Throwable cause = e.getCause();
-							if (cause != null) {
-								why = cause.getMessage();
-							} else {
-								why = e.getMessage();
-							}
-							System.err.println("Error retrieving file: " + why);
-						}
+						return null;
 					}
 				}.execute();
 
 			}
 		});
-		model.subscribeNewMessage(new ModelListener() {
 
-			@Override
-			public void update(Observable arg0, Object arg1) {
-				try {
-					final Message msg = (Message) arg1;
-					final String timestamp = String.valueOf(msg.getTimestamp());
-					final String connection = msg.getConnection().getAddress();
-					final MessageType type = msg.getType();
-					if (type == MessageType.UART) {
-						view.addUARTMessage(timestamp, connection, msg.getMessage());
-					} else if (type == MessageType.MESS) {
-						view.addLogmessage(timestamp, connection, msg.getMessage());
-					}
-				} catch (final ClassCastException e) {
-					e.printStackTrace();
-				}
-
-			}
-		});
-		model.subscribeConnectionLost(new ModelListener() {
-
-			@Override
-			public void update(Observable o, Object arg) {
-				view.setClients(getClientlist());
-
-			}
-		});
 	}
 
-	private String[] getClientlist() {
-		final List<Connection> connections = model.getConnections();
-		final int connections_size = connections.size();
-		final String[] connections_txt = new String[connections_size];
-		for (int i = 0; i < connections_size; ++i) {
-			final Connection this_con = connections.get(i);
-			connections_txt[i] = this_con.getAddress() + ":" + this_con.getPort();
-		}
-		return connections_txt;
-	}
 }

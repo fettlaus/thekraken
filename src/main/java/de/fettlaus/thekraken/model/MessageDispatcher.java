@@ -1,9 +1,10 @@
 package de.fettlaus.thekraken.model;
 
-import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 
-public class MessageDispatcher extends Observable implements Runnable {
+import de.fettlaus.thekraken.events.EventBus;
+
+public class MessageDispatcher implements Runnable {
 
 	private final BlockingQueue<Message> messages;
 
@@ -17,8 +18,7 @@ public class MessageDispatcher extends Observable implements Runnable {
 		while (true) {
 			try {
 				msg = messages.take();
-				setChanged();
-				notifyObservers(msg);
+				EventBus.instance().post(msg);
 			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}

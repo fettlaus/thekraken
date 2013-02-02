@@ -39,7 +39,7 @@ public class GuiView implements View {
 	private JTextField textField_status;
 	private JTextField textField_connect;
 	private JButton button_connect;
-	private DefaultListModel<String> list_targets_model;
+	private DefaultListModel list_targets_model;
 	private JButton button_synchronize;
 	private JTextArea textArea_messages;
 	private JTextArea textArea_uart;
@@ -59,7 +59,7 @@ public class GuiView implements View {
 	private JLabel label_ip;
 	private JLabel label_port;
 	private JLabel label_targets;
-	private JList<String> list_targets;
+	private JList list_targets;
 	private JPanel panel_common;
 	private JTextField textField_message;
 	private JButton button_message;
@@ -319,8 +319,8 @@ public class GuiView implements View {
 		gbc_scrollPane_targets.gridy = 5;
 		panel_targets.add(scrollPane_targets, gbc_scrollPane_targets);
 
-		list_targets_model = new DefaultListModel<String>();
-		list_targets = new JList<String>(list_targets_model);
+		list_targets_model = new DefaultListModel();
+		list_targets = new JList(list_targets_model);
 		list_targets.setAlignmentX(Component.LEFT_ALIGNMENT);
 		scrollPane_targets.setViewportView(list_targets);
 		list_targets.setAlignmentY(Component.TOP_ALIGNMENT);

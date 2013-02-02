@@ -8,10 +8,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 
-public class ThreadedConnection extends Observable implements Connection, Runnable {
+import de.fettlaus.thekraken.events.EventBus;
+
+public class ThreadedConnection implements Connection, Runnable {
 	Socket echoSocket = null;
 	DataOutputStream out = null;
 	DataInputStream in = null;
@@ -28,7 +29,7 @@ public class ThreadedConnection extends Observable implements Connection, Runnab
 	@Override
 	public void close() throws IOException {
 		echoSocket.close();
-
+		EventBus.instance().post(this); // connection lost
 	}
 
 	@Override
@@ -58,21 +59,24 @@ public class ThreadedConnection extends Observable implements Connection, Runnab
 	public void run() {
 		// TODO listen on socket
 		Message msg;
-		boolean running = true;
-		while (running) {
-			msg = new KrakenMessage();
-			try {
+		try {
+			while (true) {
+				msg = new KrakenMessage();
 				msg.read(in);
 				msg.setConnection(this);
 				messages.add(msg);
-			} catch (final IOException e) {
-				running = false;
-				setChanged();
-				notifyObservers(this); // connection lost
-			} catch (final ClassNotFoundException e) {
-				running = false;
-				e.printStackTrace();
 			}
+		} catch (final IOException e) {
+			if ((echoSocket != null) && !echoSocket.isClosed()) {
+				try {
+					close();
+				} catch (final IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+
+		} catch (final ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
