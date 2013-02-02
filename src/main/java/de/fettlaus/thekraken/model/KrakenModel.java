@@ -28,9 +28,12 @@ public class KrakenModel implements Model {
 	}
 
 	@Override
-	@Subscribe
 	public void closeConnection(Connection con) throws IOException {
 		con.close();
+	}
+	
+	@Subscribe
+	public void handleClosedConnection(Connection con){
 		connections.remove(con);
 		EventBus.instance().post(connections);
 	}
