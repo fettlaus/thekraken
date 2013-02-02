@@ -37,6 +37,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.PlainDocument;
 
 import de.fettlaus.thekraken.events.EventBus;
@@ -416,12 +417,15 @@ public class GuiView implements View {
 		panel_messages.setLayout(new BorderLayout(0, 0));
 
 		final JScrollPane scrollPane_messages = new JScrollPane();
+		scrollPane_messages.setAutoscrolls(true);
 		scrollPane_messages.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		scrollPane_messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		panel_messages.add(scrollPane_messages, BorderLayout.CENTER);
 
 		textArea_messages = new JTextArea();
 		textArea_messages.setColumns(2);
+		DefaultCaret car = (DefaultCaret) textArea_messages.getCaret();
+		car.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollPane_messages.setViewportView(textArea_messages);
 
 		final JLabel lblNewLabel = new JLabel();
