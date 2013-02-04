@@ -18,8 +18,6 @@ public interface Message {
 
 	void read(DataInputStream arg0) throws IOException, ClassNotFoundException, IllegalArgumentException;
 
-	void setSourceConnection(Connection conn);
-
 	void write(DataOutputStream arg0) throws IOException;
 
 }

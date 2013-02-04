@@ -96,11 +96,6 @@ public class KrakenMessage implements Message {
 	}
 
 	@Override
-	public void setSourceConnection(Connection source) {
-		this.source = source;
-	}
-
-	@Override
 	public String toString() {
 		return "Message(" + type + "," + body.length() + "," + timestamp + ")=" + "\"" + body + "\"";
 	}
