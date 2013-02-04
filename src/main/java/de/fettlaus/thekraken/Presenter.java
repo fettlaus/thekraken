@@ -21,6 +21,7 @@ import de.fettlaus.thekraken.view.View;
 public class Presenter {
 	Model model;
 	View view;
+	long pingpongdiff;
 
 	public Presenter(Model model, View view) {
 		super();
@@ -70,7 +71,8 @@ public class Presenter {
 			} else if (type == MessageType.MESS) {
 				view.addLogmessage(timestamp, connection, "\""+msg.getMessage()+"\"");
 			} else if(type == MessageType.PONG){
-				view.addLogmessage(timestamp, connection, "PONG");
+				long diff = System.currentTimeMillis() - pingpongdiff;
+				view.addLogmessage(timestamp, connection, "PONG ("+diff+" ms)");
 			}
 		} catch (final ClassCastException e) {
 			e.printStackTrace();
@@ -100,6 +102,7 @@ public class Presenter {
 	}
 	@Subscribe
 	public void handleSendPing(SendPingEvent evt){
+		pingpongdiff = System.currentTimeMillis();
 		model.getConnection(evt.getConnection()).sendMessage(new KrakenMessage(MessageType.PING));
 	}
 
