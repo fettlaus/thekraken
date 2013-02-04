@@ -1,12 +1,10 @@
 package de.fettlaus.thekraken.model;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 
 public interface Connection {
 	void close();
 
-	boolean connect() throws UnknownHostException, IOException;
+	boolean connect();
 
 	String getAddress();
 

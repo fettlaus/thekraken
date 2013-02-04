@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 
 import de.fettlaus.thekraken.events.EventBus;
@@ -33,23 +32,28 @@ public class ThreadedConnection implements Connection, Runnable {
 		try {
 			echoSocket.close();
 			EventBus.instance().post(this); // connection lost
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			EventBus.instance().post(new NewNotificationEvent(NotificationType.CLOSING_ERROR));
 		}
 
 	}
 
 	@Override
-	public boolean connect() throws IOException, SocketTimeoutException {
-		echoSocket = new Socket();
-		echoSocket.setTcpNoDelay(true);
-		echoSocket.connect(new InetSocketAddress(address, port), 4000);
-		out = new DataOutputStream(new BufferedOutputStream(echoSocket.getOutputStream()));
-		in = new DataInputStream(new BufferedInputStream(echoSocket.getInputStream()));
+	public boolean connect() {
+		try {
+			echoSocket = new Socket();
+			echoSocket.setTcpNoDelay(true);
+			echoSocket.connect(new InetSocketAddress(address, port), 4000);
+			out = new DataOutputStream(new BufferedOutputStream(echoSocket.getOutputStream()));
+			in = new DataInputStream(new BufferedInputStream(echoSocket.getInputStream()));
 
-		// TODO Auto-generated method stub
-		new Thread(this).start();
-		return true;
+			// TODO Auto-generated method stub
+			new Thread(this).start();
+			return true;
+		} catch (final IOException e) {
+			EventBus.instance().post(new NewNotificationEvent(NotificationType.NO_HOST_FOUND, address + ":" + port));
+			return false;
+		}
 	}
 
 	@Override

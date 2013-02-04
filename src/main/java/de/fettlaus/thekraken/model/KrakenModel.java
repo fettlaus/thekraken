@@ -1,6 +1,5 @@
 package de.fettlaus.thekraken.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -66,14 +65,10 @@ public class KrakenModel implements Model {
 	@Override
 	public void newConnection(String ip, int port) {
 		final ThreadedConnection con = new ThreadedConnection(ip, port, messages);
-		try {
-			if (con.connect() != false) {
-				connections.add(con);
-				evt.post(new NewNotificationEvent(NotificationType.NEW_CONNECTION, ip + ":" + port));
-				evt.post(connections);
-			}
-		} catch (final IOException e) {
-			evt.post(new NewNotificationEvent(NotificationType.NO_HOST_FOUND, ip + ":" + port));
+		if (con.connect() != false) {
+			connections.add(con);
+			evt.post(new NewNotificationEvent(NotificationType.NEW_CONNECTION, ip + ":" + port));
+			evt.post(connections);
 		}
 
 	}
