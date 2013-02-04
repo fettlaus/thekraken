@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
@@ -57,8 +58,8 @@ public class ThreadedConnection implements Connection, Runnable {
 	}
 
 	@Override
-	public String getAddress() {
-		return echoSocket.getInetAddress().toString();
+	public InetAddress getAddress() {
+		return echoSocket.getInetAddress();
 	}
 
 	@Override

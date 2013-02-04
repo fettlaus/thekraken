@@ -1,11 +1,13 @@
 package de.fettlaus.thekraken.model;
 
+import java.net.InetAddress;
+
 public interface Connection {
 	void close();
 
 	boolean connect();
 
-	String getAddress();
+	InetAddress getAddress();
 
 	int getPort();
 
