@@ -21,7 +21,7 @@ import de.fettlaus.thekraken.view.View;
 public class Presenter {
 	Model model;
 	View view;
-	long pingpongdiff;
+	long pingpongdiff = 0l;
 
 	public Presenter(Model model, View view) {
 		super();
@@ -33,7 +33,7 @@ public class Presenter {
 
 	@Subscribe
 	public void deadHandler(DeadEvent dead) {
-		System.out.println("Missed event: "+dead.getEvent().toString());
+		System.out.println("Missed event: " + dead.getEvent().toString());
 	}
 
 	@Subscribe
@@ -69,10 +69,10 @@ public class Presenter {
 			if (type == MessageType.UART) {
 				view.addUARTMessage(timestamp, connection, msg.getMessage());
 			} else if (type == MessageType.MESS) {
-				view.addLogmessage(timestamp, connection, "\""+msg.getMessage()+"\"");
-			} else if(type == MessageType.PONG){
-				long diff = System.currentTimeMillis() - pingpongdiff;
-				view.addLogmessage(timestamp, connection, "PONG ("+diff+" ms)");
+				view.addLogmessage(timestamp, connection, "\"" + msg.getMessage() + "\"");
+			} else if (type == MessageType.PONG) {
+				final long diff = System.currentTimeMillis() - pingpongdiff;
+				view.addLogmessage(timestamp, connection, "PONG (" + diff + " ms)");
 			}
 		} catch (final ClassCastException e) {
 			e.printStackTrace();
@@ -100,10 +100,15 @@ public class Presenter {
 			model.getConnection(index).sendMessage(msg);
 		}
 	}
+
 	@Subscribe
-	public void handleSendPing(SendPingEvent evt){
-		pingpongdiff = System.currentTimeMillis();
-		model.getConnection(evt.getConnection()).sendMessage(new KrakenMessage(MessageType.PING));
+	public void handleSendPing(SendPingEvent evt) {
+		final Connection con = model.getConnection(evt.getConnection());
+		if (con != null) {
+			pingpongdiff = System.currentTimeMillis();
+			con.sendMessage(new KrakenMessage(MessageType.PING));
+		}
+
 	}
 
 }

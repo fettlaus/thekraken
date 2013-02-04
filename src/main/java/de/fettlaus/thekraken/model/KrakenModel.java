@@ -45,8 +45,19 @@ public class KrakenModel implements Model {
 		}
 	}
 
+	/**
+	 * Returns the Connection on specified index. Returns null on out of bounds
+	 * or Connection not present.
+	 * 
+	 * @param index
+	 *            Index of Connection
+	 * @return Requested Connection
+	 */
 	@Override
 	public Connection getConnection(int index) {
+		if ((index < 0) || (index > (connections.size() - 1))) {
+			return null;
+		}
 		return connections.get(index);
 	}
 
