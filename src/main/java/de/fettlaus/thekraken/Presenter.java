@@ -9,6 +9,7 @@ import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
+import de.fettlaus.thekraken.events.SendPingEvent;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.KrakenMessage;
 import de.fettlaus.thekraken.model.Message;
@@ -67,7 +68,9 @@ public class Presenter {
 			if (type == MessageType.UART) {
 				view.addUARTMessage(timestamp, connection, msg.getMessage());
 			} else if (type == MessageType.MESS) {
-				view.addLogmessage(timestamp, connection, msg.getMessage());
+				view.addLogmessage(timestamp, connection, "\""+msg.getMessage()+"\"");
+			} else if(type == MessageType.PONG){
+				view.addLogmessage(timestamp, connection, "PONG");
 			}
 		} catch (final ClassCastException e) {
 			e.printStackTrace();
@@ -94,6 +97,10 @@ public class Presenter {
 		} else {
 			model.getConnection(index).sendMessage(msg);
 		}
+	}
+	@Subscribe
+	public void handleSendPing(SendPingEvent evt){
+		model.getConnection(evt.getConnection()).sendMessage(new KrakenMessage(MessageType.PING));
 	}
 
 }
