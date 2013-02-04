@@ -30,7 +30,7 @@ public class Presenter {
 		this.model = model;
 		this.view = view;
 
-		connectEvents();
+		EventBus.instance().register(this);
 	}
 
 	@Subscribe
@@ -92,12 +92,6 @@ public class Presenter {
 		}else{
 			model.getConnection(index).sendMessage(msg);
 		}
-	}
-	
-
-	private void connectEvents() {
-		EventBus.instance().register(this);
-
 	}
 
 }
