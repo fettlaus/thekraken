@@ -10,12 +10,10 @@ import java.util.concurrent.BlockingQueue;
 import com.google.common.eventbus.Subscribe;
 
 import de.fettlaus.thekraken.events.EventBus;
-import de.fettlaus.thekraken.events.ModelListener;
 
 public class KrakenModel implements Model {
 	public static final int BUFFER_SIZE = 20;
 	List<Connection> connections;
-	ModelListener connectionLostObserver;
 	BlockingQueue<Message> messages;
 	MessageDispatcher disp;
 
