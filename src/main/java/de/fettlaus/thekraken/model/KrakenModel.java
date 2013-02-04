@@ -36,15 +36,6 @@ public class KrakenModel implements Model {
 
 	}
 
-	@Override
-	public void closeConnection(Connection con) {
-		try {
-			con.close();
-		} catch (final IOException e) {
-			evt.post(new NewNotificationEvent(NotificationType.CLOSING_ERROR));
-		}
-	}
-
 	/**
 	 * Returns the Connection on specified index. Returns null on out of bounds
 	 * or Connection not present.

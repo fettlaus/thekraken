@@ -11,6 +11,8 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 
 import de.fettlaus.thekraken.events.EventBus;
+import de.fettlaus.thekraken.events.NewNotificationEvent;
+import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
 public class ThreadedConnection implements Connection, Runnable {
 	Socket echoSocket = null;
@@ -27,9 +29,14 @@ public class ThreadedConnection implements Connection, Runnable {
 	}
 
 	@Override
-	public void close() throws IOException {
-		echoSocket.close();
-		EventBus.instance().post(this); // connection lost
+	public void close() {
+		try {
+			echoSocket.close();
+			EventBus.instance().post(this); // connection lost
+		} catch (IOException e) {
+			EventBus.instance().post(new NewNotificationEvent(NotificationType.CLOSING_ERROR));
+		}
+
 	}
 
 	@Override
@@ -67,11 +74,7 @@ public class ThreadedConnection implements Connection, Runnable {
 			}
 		} catch (final IOException e) {
 			if ((echoSocket != null) && !echoSocket.isClosed()) {
-				try {
-					close();
-				} catch (final IOException ex) {
-					ex.printStackTrace();
-				}
+				close();
 			}
 
 		} catch (final ClassNotFoundException e) {
@@ -85,11 +88,7 @@ public class ThreadedConnection implements Connection, Runnable {
 			msg.write(out);
 		} catch (final IOException e) {
 			if ((echoSocket != null) && !echoSocket.isClosed()) {
-				try {
-					close();
-				} catch (final IOException ex) {
-					ex.printStackTrace();
-				}
+				close();
 			}
 		}
 	}

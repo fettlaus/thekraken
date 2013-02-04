@@ -12,8 +12,6 @@ import java.util.List;
 public interface Model {
 	void broadcastMessage(Message msg);
 
-	void closeConnection(Connection con);
-
 	Connection getConnection(int index);
 
 	List<Connection> getConnections();
