@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 
+import de.fettlaus.thekraken.events.CloseConnectionEvent;
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
@@ -109,6 +110,14 @@ public class Presenter {
 			con.sendMessage(new KrakenMessage(MessageType.PING));
 		}
 
+	}
+	
+	@Subscribe
+	public void handleCloseConnection(CloseConnectionEvent evt){
+		final Connection con = model.getConnection(evt.getConnection());
+		if(con != null) {
+			con.close();
+		}
 	}
 
 }
