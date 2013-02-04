@@ -62,7 +62,7 @@ public class Presenter {
 	public void handleNewMessage(Message msg) {
 		try {
 			final String timestamp = String.valueOf(msg.getTimestamp());
-			final String connection = msg.getConnection().getAddress();
+			final String connection = msg.getSourceConnection().getAddress();
 			final MessageType type = msg.getType();
 			if (type == MessageType.UART) {
 				view.addUARTMessage(timestamp, connection, msg.getMessage());
