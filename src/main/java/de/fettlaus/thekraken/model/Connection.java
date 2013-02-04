@@ -1,6 +1,5 @@
 package de.fettlaus.thekraken.model;
 
-
 public interface Connection {
 	void close();
 
@@ -11,6 +10,4 @@ public interface Connection {
 	int getPort();
 
 	void sendMessage(Message msg);
-
-	void sendPing();
 }

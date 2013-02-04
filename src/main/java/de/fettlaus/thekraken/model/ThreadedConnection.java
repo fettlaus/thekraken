@@ -97,10 +97,4 @@ public class ThreadedConnection implements Connection, Runnable {
 		}
 	}
 
-	@Override
-	public void sendPing() {
-		// TODO Auto-generated method stub
-
-	}
-
 }
