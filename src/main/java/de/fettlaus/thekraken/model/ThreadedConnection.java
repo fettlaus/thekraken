@@ -61,9 +61,8 @@ public class ThreadedConnection implements Connection, Runnable {
 		Message msg;
 		try {
 			while (true) {
-				msg = new KrakenMessage();
+				msg = new KrakenMessage(this);
 				msg.read(in);
-				msg.setSourceConnection(this);
 				messages.add(msg);
 			}
 		} catch (final IOException e) {

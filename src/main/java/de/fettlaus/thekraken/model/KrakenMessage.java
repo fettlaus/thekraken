@@ -15,8 +15,10 @@ public class KrakenMessage implements Message {
 
 	private Connection source;
 
-	public KrakenMessage() {
+	public KrakenMessage(Connection source) {
 		this(MessageType.ERROR, 0l, "");
+		this.source = source;
+
 	}
 
 	public KrakenMessage(MessageType type, long timestamp, String message) {
@@ -32,13 +34,13 @@ public class KrakenMessage implements Message {
 	}
 
 	@Override
-	public Connection getSourceConnection() {
-		return source;
+	public String getMessage() {
+		return body;
 	}
 
 	@Override
-	public String getMessage() {
-		return body;
+	public Connection getSourceConnection() {
+		return source;
 	}
 
 	@Override
