@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 
 import de.fettlaus.thekraken.events.EventBus;
@@ -33,7 +33,7 @@ public class ThreadedConnection implements Connection, Runnable {
 	}
 
 	@Override
-	public boolean connect() throws UnknownHostException, IOException {
+	public boolean connect() throws IOException, SocketTimeoutException {
 		echoSocket = new Socket();
 		echoSocket.setTcpNoDelay(true);
 		echoSocket.connect(new InetSocketAddress(address, port), 4000);
@@ -84,7 +84,7 @@ public class ThreadedConnection implements Connection, Runnable {
 	public void sendMessage(Message msg) {
 		try {
 			msg.write(out);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			if ((echoSocket != null) && !echoSocket.isClosed()) {
 				try {
 					close();

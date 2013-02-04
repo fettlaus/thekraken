@@ -3,8 +3,6 @@
  */
 package de.fettlaus.thekraken.model;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -12,16 +10,16 @@ import java.util.List;
  * 
  */
 public interface Model {
-	void closeConnection(Connection con) throws IOException;
+	void broadcastMessage(Message msg);
+
+	void closeConnection(Connection con);
 
 	Connection getConnection(int index);
 
 	List<Connection> getConnections();
 
-	void newConnection(String ip, int port) throws UnknownHostException, IOException;
+	void newConnection(String ip, int port);
 
 	void synchronizeClients();
-	
-	void broadcastMessage(Message msg);
 
 }

@@ -1,7 +1,6 @@
 package de.fettlaus.thekraken.model;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -10,32 +9,40 @@ import java.util.concurrent.BlockingQueue;
 import com.google.common.eventbus.Subscribe;
 
 import de.fettlaus.thekraken.events.EventBus;
+import de.fettlaus.thekraken.events.NewNotificationEvent;
+import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
 public class KrakenModel implements Model {
 	public static final int BUFFER_SIZE = 20;
 	List<Connection> connections;
 	BlockingQueue<Message> messages;
 	MessageDispatcher disp;
+	EventBus evt;
 
 	public KrakenModel() {
 		connections = new ArrayList<Connection>();
 		messages = new ArrayBlockingQueue<Message>(BUFFER_SIZE);
 		disp = new MessageDispatcher(messages);
 		new Thread(disp).start();
-		EventBus.instance().register(this);
+		evt = EventBus.instance();
+		evt.register(this);
 	}
 
 	@Override
 	public void broadcastMessage(Message msg) {
-		for(Connection con: connections){
+		for (final Connection con : connections) {
 			con.sendMessage(msg);
 		}
 
 	}
 
 	@Override
-	public void closeConnection(Connection con) throws IOException {
-		con.close();
+	public void closeConnection(Connection con) {
+		try {
+			con.close();
+		} catch (final IOException e) {
+			evt.post(new NewNotificationEvent(NotificationType.CLOSING_ERROR));
+		}
 	}
 
 	@Override
@@ -51,16 +58,20 @@ public class KrakenModel implements Model {
 	@Subscribe
 	public void handleClosedConnection(Connection con) {
 		connections.remove(con);
-		EventBus.instance().post(connections);
+		evt.post(connections);
 	}
 
 	@Override
-	public void newConnection(String ip, int port) throws UnknownHostException, IOException {
+	public void newConnection(String ip, int port) {
 		final ThreadedConnection con = new ThreadedConnection(ip, port, messages);
-		if (con.connect() != false) {
-			connections.add(con);
-			EventBus.instance().post(connections);
-			// newConnectionListener.fireEvent(this);
+		try {
+			if (con.connect() != false) {
+				connections.add(con);
+				evt.post(new NewNotificationEvent(NotificationType.NEW_CONNECTION, ip + ":" + port));
+				evt.post(connections);
+			}
+		} catch (final IOException e) {
+			evt.post(new NewNotificationEvent(NotificationType.NO_HOST_FOUND, ip + ":" + port));
 		}
 
 	}

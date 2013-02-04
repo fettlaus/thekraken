@@ -1,24 +1,20 @@
 package de.fettlaus.thekraken;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.List;
-
-import javax.swing.SwingWorker;
 
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
+import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.KrakenMessage;
 import de.fettlaus.thekraken.model.Message;
 import de.fettlaus.thekraken.model.MessageType;
 import de.fettlaus.thekraken.model.Model;
+import de.fettlaus.thekraken.view.Messages;
 import de.fettlaus.thekraken.view.View;
 
 public class Presenter {
@@ -50,6 +46,19 @@ public class Presenter {
 	}
 
 	@Subscribe
+	public void handleNewConnection(NewConnectionEvent evt) {
+		int port;
+		String host;
+		try {
+			port = Integer.parseInt(evt.getPort());
+			host = evt.getAddress();
+			model.newConnection(host, port);
+		} catch (final NumberFormatException e1) {
+			view.setNotification("Wrong Port specified");
+		}
+	}
+
+	@Subscribe
 	public void handleNewMessage(Message msg) {
 		try {
 			final String timestamp = String.valueOf(msg.getTimestamp());
@@ -64,32 +73,25 @@ public class Presenter {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Subscribe
-	public void handleNewConnection(NewConnectionEvent evt){
-		int port;
-		String host;
-		try {
-			port = Integer.parseInt(evt.getPort());
-			host = evt.getAddress();
-			model.newConnection(host, port);
-			view.setNotification("Connection established!");
-		} catch (final NumberFormatException e1) {
-			view.setNotification("Wrong Port specified");
-		} catch (final UnknownHostException e2) {
-			view.setNotification("Can't find host!");
-		} catch (final IOException e3) {
-			view.setNotification("Can't establish connection");
+	public void handleNotifications(NewNotificationEvent evt) {
+		String text = Messages.getString("Notification." + evt.getType().toString());
+		final String msg = evt.getMessage();
+		if (msg != null) {
+			text = text + ": " + msg;
 		}
+		// TODO: handle in swing-thread
+		view.setNotification(text);
 	}
-	
+
 	@Subscribe
-	public void handleSendMessage(SendMessageEvent evt){
-		Message msg = new KrakenMessage(MessageType.MESS, evt.getMessage());
-		int index = evt.getTargetIndex();
-		if(index < 0){
+	public void handleSendMessage(SendMessageEvent evt) {
+		final Message msg = new KrakenMessage(MessageType.MESS, evt.getMessage());
+		final int index = evt.getTargetIndex();
+		if (index < 0) {
 			model.broadcastMessage(msg);
-		}else{
+		} else {
 			model.getConnection(index).sendMessage(msg);
 		}
 	}
