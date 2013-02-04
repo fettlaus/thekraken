@@ -12,6 +12,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Locale;
 
 import javax.swing.ButtonGroup;
@@ -35,6 +37,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
@@ -45,6 +49,32 @@ import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
 
 public class GuiView implements View {
+
+	/**
+	 * 
+	 * @author bachelor
+	 * @see http://docs.oracle.com/javase/6/docs/api/javax/swing/JTextField.html
+	 */
+	public class TextFieldLimit extends PlainDocument {
+		private static final long serialVersionUID = 3046506161061318577L;
+		private final int maximum;
+
+		TextFieldLimit(int maximum) {
+			super();
+			this.maximum = maximum;
+		}
+
+		@Override
+		public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+			if (str == null) {
+				return;
+			}
+
+			if ((getLength() + str.length()) <= maximum) {
+				super.insertString(offset, str, attr);
+			}
+		}
+	}
 
 	private JFrame form_main;
 	private JTextField textField_status;
@@ -76,6 +106,7 @@ public class GuiView implements View {
 	private JButton button_message;
 	private JRadioButton radio_message_all;
 	private JRadioButton radio_message_target;
+
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 
 	/**
@@ -288,6 +319,33 @@ public class GuiView implements View {
 
 		list_targets_model = new DefaultListModel();
 		list_targets = new JList(list_targets_model);
+		list_targets.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				final int tmp = list_targets.getSelectedIndex();
+				list_targets.clearSelection();
+				list_targets.setSelectedIndex(tmp);
+				super.mousePressed(e);
+			}
+		});
+		list_targets_model.addListDataListener(new ListDataListener() {
+
+			@Override
+			public void contentsChanged(ListDataEvent e) {
+			}
+
+			@Override
+			public void intervalAdded(ListDataEvent e) {
+				list_targets.clearSelection();
+				list_targets.setSelectedIndex(0);
+			}
+
+			@Override
+			public void intervalRemoved(ListDataEvent e) {
+			}
+
+		});
+
 		list_targets.setAlignmentX(Component.LEFT_ALIGNMENT);
 		scrollPane_targets.setViewportView(list_targets);
 		list_targets.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -348,6 +406,11 @@ public class GuiView implements View {
 		panel_targets.add(button_connect, gbc_button_connect);
 
 		button_ping = new JButton();
+		button_ping.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		final GridBagConstraints gbc_button_ping = new GridBagConstraints();
 		gbc_button_ping.gridwidth = 2;
 		gbc_button_ping.insets = new Insets(2, 2, 2, 5);
@@ -424,7 +487,7 @@ public class GuiView implements View {
 
 		textArea_messages = new JTextArea();
 		textArea_messages.setColumns(2);
-		DefaultCaret car = (DefaultCaret) textArea_messages.getCaret();
+		final DefaultCaret car = (DefaultCaret) textArea_messages.getCaret();
 		car.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollPane_messages.setViewportView(textArea_messages);
 
@@ -510,29 +573,7 @@ public class GuiView implements View {
 		form_main.setVisible(true);
 
 	}
-	/**
-	 * 
-	 * @author bachelor
-	 * @see http://docs.oracle.com/javase/6/docs/api/javax/swing/JTextField.html
-	 */
-	public class TextFieldLimit extends PlainDocument {
-		private static final long serialVersionUID = 3046506161061318577L;
-		private int maximum;
 
-		  TextFieldLimit(int maximum) {
-		   super();
-		   this.maximum = maximum;
-		   }
-
-		  public void insertString( int offset, String  str, AttributeSet attr ) throws BadLocationException {
-		    if (str == null) return;
-
-		    if ((getLength() + str.length()) <= maximum) {
-		      super.insertString(offset, str, attr);
-		    }
-		  }
-		}
-	
 	private void sendMessage() {
 		int target = -1;
 		if (radio_message_target.isSelected()) {
