@@ -15,22 +15,45 @@ public class KrakenMessage implements Message {
 
 	private Connection source;
 
+	/**
+	 * This constructor is only used by the receiving end.
+	 * @param source
+	 */
 	public KrakenMessage(Connection source) {
 		this(MessageType.ERROR, 0l, "");
 		this.source = source;
 
 	}
 
+	/**
+	 * Fully specify a Message.
+	 * @param type Type of Message
+	 * @param timestamp Timestamp of message
+	 * @param message Text of Message
+	 */
 	public KrakenMessage(MessageType type, long timestamp, String message) {
 		super();
 		this.type = type;
 		this.timestamp = timestamp;
 		body = message;
 	}
-
+	
+	/**
+	 * This constructor generates the needed timestamp by itself
+	 * @param type
+	 * @param message
+	 */
 	public KrakenMessage(MessageType type, String message) {
 		// calc own timestamp
 		this(type, 1l, message);
+	}
+	
+	/**
+	 * This constructor is used to send a message without text without timestamp
+	 * @param type Type of message
+	 */
+	public KrakenMessage(MessageType type){
+		this(type,"");
 	}
 
 	@Override
@@ -88,6 +111,7 @@ public class KrakenMessage implements Message {
 		arg0.writeByte(type.getValue());
 		arg0.writeShort(body_tmp.length);
 		arg0.writeInt((int) timestamp);
+		//TODO check for type not length
 		if (body_tmp.length > 0) {
 			arg0.write(body_tmp, 0, body_tmp.length);
 		}
