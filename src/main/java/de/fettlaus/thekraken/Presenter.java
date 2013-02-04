@@ -31,7 +31,7 @@ public class Presenter {
 
 	@Subscribe
 	public void deadHandler(DeadEvent dead) {
-		System.out.println(dead.getEvent().toString());
+		System.out.println("Missed event: "+dead.getEvent().toString());
 	}
 
 	@Subscribe
