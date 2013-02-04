@@ -44,9 +44,12 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.PlainDocument;
 
+import de.fettlaus.thekraken.events.CloseConnectionEvent;
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
+import de.fettlaus.thekraken.events.SendPingEvent;
+import de.fettlaus.thekraken.events.SynchronizeClientsEvent;
 
 public class GuiView implements View {
 
@@ -108,11 +111,13 @@ public class GuiView implements View {
 	private JRadioButton radio_message_target;
 
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	private EventBus evt;
 
 	/**
 	 * Create the application.
 	 */
 	public GuiView() {
+		evt = EventBus.instance();
 		initialize();
 	}
 
@@ -392,7 +397,7 @@ public class GuiView implements View {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventBus.instance().post(new NewConnectionEvent(textField_connect.getText(), textField_port.getText()));
+				evt.post(new NewConnectionEvent(textField_connect.getText(), textField_port.getText()));
 			}
 		});
 
@@ -409,6 +414,7 @@ public class GuiView implements View {
 		button_ping.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				evt.post(new SendPingEvent(list_targets.getSelectedIndex()));
 			}
 		});
 		final GridBagConstraints gbc_button_ping = new GridBagConstraints();
@@ -420,6 +426,11 @@ public class GuiView implements View {
 		panel_targets.add(button_ping, gbc_button_ping);
 
 		button_disconnect = new JButton();
+		button_disconnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				evt.post(new CloseConnectionEvent(list_targets.getSelectedIndex()));
+			}
+		});
 		final GridBagConstraints gbc_button_disconnect = new GridBagConstraints();
 		gbc_button_disconnect.insets = new Insets(2, 2, 2, 2);
 		gbc_button_disconnect.fill = GridBagConstraints.HORIZONTAL;
@@ -561,6 +572,11 @@ public class GuiView implements View {
 		panel_common.add(radio_message_target, gbc_radio_message_target);
 
 		button_synchronize = new JButton();
+		button_synchronize.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				evt.post(new SynchronizeClientsEvent());
+			}
+		});
 		final GridBagConstraints gbc_button_synchronize = new GridBagConstraints();
 		gbc_button_synchronize.insets = new Insets(2, 2, 2, 2);
 		gbc_button_synchronize.fill = GridBagConstraints.BOTH;
@@ -579,7 +595,7 @@ public class GuiView implements View {
 		if (radio_message_target.isSelected()) {
 			target = list_targets.getSelectedIndex();
 		}
-		EventBus.instance().post(new SendMessageEvent(textField_message.getText(), target));
+		evt.post(new SendMessageEvent(textField_message.getText(), target));
 		textField_message.setText("");
 		textField_message.requestFocus();
 	}
