@@ -7,9 +7,11 @@ import de.fettlaus.thekraken.events.EventBus;
 public class MessageDispatcher implements Runnable {
 
 	private final BlockingQueue<Message> messages;
-
+	EventBus evt;
+	
 	public MessageDispatcher(BlockingQueue<Message> messages) {
 		this.messages = messages;
+		evt = EventBus.instance();
 	}
 
 	@Override
@@ -18,7 +20,7 @@ public class MessageDispatcher implements Runnable {
 		while (true) {
 			try {
 				msg = messages.take();
-				EventBus.instance().post(msg);
+				evt.post(msg);
 			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
