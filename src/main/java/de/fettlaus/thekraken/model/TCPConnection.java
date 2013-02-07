@@ -14,7 +14,7 @@ import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
-public class ThreadedConnection implements Connection, Runnable {
+public class TCPConnection implements Connection, Runnable {
 	Socket echoSocket = null;
 	DataOutputStream out = null;
 	DataInputStream in = null;
@@ -22,7 +22,7 @@ public class ThreadedConnection implements Connection, Runnable {
 	String address = null;
 	int port;
 
-	public ThreadedConnection(String ip, int port, BlockingQueue<Message> messages) {
+	public TCPConnection(String ip, int port, BlockingQueue<Message> messages) {
 		address = ip;
 		this.port = port;
 		this.messages = messages;
