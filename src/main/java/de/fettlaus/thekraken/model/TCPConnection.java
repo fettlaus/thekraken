@@ -11,18 +11,19 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 import de.fettlaus.thekraken.events.EventBus;
+import de.fettlaus.thekraken.events.LostConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
-public class TCPConnection implements Connection, Runnable {
+public class TCPConnection implements Connection {
 	Socket echoSocket = null;
 	DataOutputStream out = null;
 	DataInputStream in = null;
 	BlockingQueue<Message> messages = null;
-	String address = null;
+	InetAddress address = null;
 	int port;
 
-	public TCPConnection(String ip, int port, BlockingQueue<Message> messages) {
+	public TCPConnection(InetAddress ip, int port, BlockingQueue<Message> messages) {
 		address = ip;
 		this.port = port;
 		this.messages = messages;
@@ -30,46 +31,37 @@ public class TCPConnection implements Connection, Runnable {
 
 	@Override
 	public void close() {
-		try {
-			echoSocket.close();
-			EventBus.instance().post(this); // connection lost
-		} catch (final IOException e) {
-			EventBus.instance().post(new NewNotificationEvent(NotificationType.CLOSING_ERROR));
+		if ((echoSocket != null) && !echoSocket.isClosed()) {
+			try {
+				echoSocket.close();
+			} catch (final IOException e) {
+				EventBus.instance().post(new NewNotificationEvent(NotificationType.CLOSING_ERROR));
+			}
 		}
-
 	}
 
 	@Override
-	public boolean connect() {
-		try {
-			echoSocket = new Socket();
-			echoSocket.setTcpNoDelay(true);
-			echoSocket.connect(new InetSocketAddress(address, port), 4000);
-			out = new DataOutputStream(new BufferedOutputStream(echoSocket.getOutputStream()));
-			in = new DataInputStream(new BufferedInputStream(echoSocket.getInputStream()));
-
-			// TODO Auto-generated method stub
-			new Thread(this).start();
-			return true;
-		} catch (final IOException e) {
-			EventBus.instance().post(new NewNotificationEvent(NotificationType.NO_HOST_FOUND, address + ":" + port));
-			return false;
-		}
+	public void connect() throws IOException {
+		echoSocket = new Socket();
+		echoSocket.setTcpNoDelay(true);
+		echoSocket.connect(new InetSocketAddress(address, port), 4000);
+		out = new DataOutputStream(new BufferedOutputStream(echoSocket.getOutputStream()));
+		in = new DataInputStream(new BufferedInputStream(echoSocket.getInputStream()));
+		new Thread(this).start();
 	}
 
 	@Override
 	public InetAddress getAddress() {
-		return echoSocket.getInetAddress();
+		return address;
 	}
 
 	@Override
 	public int getPort() {
-		return echoSocket.getPort();
+		return port;
 	}
 
 	@Override
 	public void run() {
-		// TODO listen on socket
 		Message msg;
 		try {
 			while (true) {
@@ -78,10 +70,7 @@ public class TCPConnection implements Connection, Runnable {
 				messages.add(msg);
 			}
 		} catch (final IOException e) {
-			if ((echoSocket != null) && !echoSocket.isClosed()) {
-				close();
-			}
-
+			EventBus.instance().post(new LostConnectionEvent(this));
 		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -92,9 +81,7 @@ public class TCPConnection implements Connection, Runnable {
 		try {
 			msg.write(out);
 		} catch (final IOException e) {
-			if ((echoSocket != null) && !echoSocket.isClosed()) {
-				close();
-			}
+			EventBus.instance().post(new LostConnectionEvent(this));
 		}
 	}
 

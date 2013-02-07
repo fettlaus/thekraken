@@ -1,5 +1,9 @@
 package de.fettlaus.thekraken.model;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -8,6 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import com.google.common.eventbus.Subscribe;
 
 import de.fettlaus.thekraken.events.EventBus;
+import de.fettlaus.thekraken.events.LostConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
@@ -16,15 +21,19 @@ public class KrakenModel implements Model {
 	List<Connection> connections;
 	BlockingQueue<Message> messages;
 	MessageDispatcher disp;
-	EventBus evt;
+	EventBus evtbus;
+	UDPConnection udp;
 
-	public KrakenModel() {
+	public KrakenModel() throws SocketException {
 		connections = new ArrayList<Connection>();
 		messages = new ArrayBlockingQueue<Message>(BUFFER_SIZE);
 		disp = new MessageDispatcher(messages);
 		new Thread(disp).start();
-		evt = EventBus.instance();
-		evt.register(this);
+		evtbus = EventBus.instance();
+		evtbus.register(this);
+		udp = new UDPConnection();
+		udp.connect();
+		new Thread(udp).start();
 	}
 
 	@Override
@@ -57,25 +66,42 @@ public class KrakenModel implements Model {
 	}
 
 	@Subscribe
-	public void handleClosedConnection(Connection con) {
-		connections.remove(con);
-		evt.post(connections);
+	public void handleClosedConnection(LostConnectionEvent evt) {
+		final Connection connection = evt.getConnection();
+		connection.close();
+		connections.remove(connection);
+		evtbus.post(connections);
 	}
 
 	@Override
 	public void newConnection(String ip, int port) {
-		final ThreadedConnection con = new ThreadedConnection(ip, port, messages);
-		if (con.connect() != false) {
-			connections.add(con);
-			evt.post(new NewNotificationEvent(NotificationType.NEW_CONNECTION, ip + ":" + port));
-			evt.post(connections);
+		try {
+			final Connection con = new TCPConnection(InetAddress.getByName(ip), port, messages);
+			try {
+				con.connect();
+				connections.add(con);
+				evtbus.post(new NewNotificationEvent(NotificationType.NEW_CONNECTION, ip + ":" + port));
+				evtbus.post(connections);
+			} catch (final IOException e) {
+				evtbus.post(new NewNotificationEvent(NotificationType.CANT_CONNECT_TO_HOST, ip + ":" + port));
+				con.close();
+			}
+		} catch (final UnknownHostException e1) {
+			evtbus.post(new NewNotificationEvent(NotificationType.NO_HOST_FOUND));
 		}
 
 	}
 
 	@Override
 	public void synchronizeClients() {
-		// TODO Auto-generated method stub
+		TimeKeeper.reset();
+		for (final Connection con : connections) {
+			try {
+				udp.sendPing(con);
+			} catch (final IOException e) {
+				evtbus.post(new NewNotificationEvent(NotificationType.CANT_SEND_UDP));
+			}
+		}
 
 	}
 
