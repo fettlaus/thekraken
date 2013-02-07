@@ -1,5 +1,7 @@
 package de.fettlaus.thekraken;
 
+import java.net.SocketException;
+
 import de.fettlaus.thekraken.model.KrakenModel;
 import de.fettlaus.thekraken.view.GuiView;
 
@@ -10,8 +12,9 @@ public class TheKraken {
 	 * Launch the application.
 	 * 
 	 * @throws InterruptedException
+	 * @throws SocketException 
 	 */
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, SocketException {
 		// Locale.setDefault(Locale.GERMAN);
 		// Locale.setDefault(Locale.GERMANY);
 		final Presenter pres = new Presenter(new KrakenModel(), new GuiView());
