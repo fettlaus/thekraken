@@ -14,6 +14,14 @@ public class KrakenMessage implements Message {
 	private long timestamp;
 
 	private Connection source;
+	
+	/**
+	 * This constructor is used by a receiving udp socket.
+	 * @param source
+	 */
+	public KrakenMessage() {
+		this(MessageType.ERROR, 0l, "");
+	}
 
 	/**
 	 * This constructor is only used by the receiving end.
