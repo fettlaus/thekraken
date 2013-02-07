@@ -11,6 +11,7 @@ import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
 import de.fettlaus.thekraken.events.SendPingEvent;
+import de.fettlaus.thekraken.events.SynchronizeClientsEvent;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.KrakenMessage;
 import de.fettlaus.thekraken.model.Message;
@@ -38,6 +39,14 @@ public class Presenter {
 	}
 
 	@Subscribe
+	public void handleCloseConnection(CloseConnectionEvent evt) {
+		final Connection con = model.getConnection(evt.getConnection());
+		if (con != null) {
+			con.close();
+		}
+	}
+
+	@Subscribe
 	public void handleConnectionList(List<Connection> conlist) {
 		final int connections_size = conlist.size();
 		final String[] connections_txt = new String[connections_size];
@@ -57,6 +66,7 @@ public class Presenter {
 			host = evt.getAddress();
 			model.newConnection(host, port);
 		} catch (final NumberFormatException e1) {
+			// TODO localize
 			view.setNotification("Wrong Port specified");
 		}
 	}
@@ -72,8 +82,9 @@ public class Presenter {
 			} else if (type == MessageType.MESS) {
 				view.addLogmessage(timestamp, connection, "\"" + msg.getMessage() + "\"");
 			} else if (type == MessageType.PONG) {
-				final long diff = System.currentTimeMillis() - pingpongdiff;
-				view.addLogmessage(timestamp, connection, "PONG (" + diff + " ms)");
+				final long diff = System.nanoTime() - pingpongdiff;
+				view.addLogmessage(timestamp, connection, "PONG (" + diff + " ns)");
+				view.addLogmessage(timestamp, connection, String.valueOf(System.nanoTime()));
 			}
 		} catch (final ClassCastException e) {
 			e.printStackTrace();
@@ -89,6 +100,7 @@ public class Presenter {
 		}
 		// TODO: handle in swing-thread
 		view.setNotification(text);
+		view.addLogmessage(String.valueOf(System.currentTimeMillis()), "HOST", text);
 	}
 
 	@Subscribe
@@ -106,18 +118,15 @@ public class Presenter {
 	public void handleSendPing(SendPingEvent evt) {
 		final Connection con = model.getConnection(evt.getConnection());
 		if (con != null) {
-			pingpongdiff = System.currentTimeMillis();
+			pingpongdiff = System.nanoTime();
 			con.sendMessage(new KrakenMessage(MessageType.PING));
 		}
 
 	}
-	
+
 	@Subscribe
-	public void handleCloseConnection(CloseConnectionEvent evt){
-		final Connection con = model.getConnection(evt.getConnection());
-		if(con != null) {
-			con.close();
-		}
+	public void handleSynchronizeClients(SynchronizeClientsEvent evt) {
+		model.synchronizeClients();
 	}
 
 }
