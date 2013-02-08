@@ -53,7 +53,7 @@ public class KrakenMessage implements Message {
 	 */
 	public KrakenMessage(MessageType type, String message) {
 		// calc own timestamp
-		this(type, 1l, message);
+		this(type, TimeKeeper.time(), message);
 	}
 	
 	/**
@@ -95,7 +95,7 @@ public class KrakenMessage implements Message {
 		}
 		final byte[] body_temp = new byte[length];
 
-		timestamp = arg0.readInt();
+		timestamp = arg0.readLong();
 
 		if (length > 0) {
 			arg0.read(body_temp, 0, length);
@@ -113,7 +113,7 @@ public class KrakenMessage implements Message {
 		final byte[] body_tmp = body.getBytes(Charsets.US_ASCII);
 		arg0.writeByte(type.getValue());
 		arg0.writeShort(body_tmp.length);
-		arg0.writeInt((int) timestamp);
+		arg0.writeLong(timestamp);
 		//TODO check for type not length
 		if (body_tmp.length > 0) {
 			arg0.write(body_tmp, 0, body_tmp.length);
