@@ -100,7 +100,7 @@ public class Presenter {
 		}
 		// TODO: handle in swing-thread
 		view.setNotification(text);
-		view.addLogmessage(String.valueOf(System.currentTimeMillis()), "HOST", text);
+		view.addHostMessage(String.valueOf(evt.getTimestamp()), text);
 	}
 
 	@Subscribe

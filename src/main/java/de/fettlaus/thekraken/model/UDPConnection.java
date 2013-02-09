@@ -53,7 +53,6 @@ public class UDPConnection implements Runnable {
 					byte[] buf = out.toByteArray();
 					DatagramPacket dp = new DatagramPacket(buf, buf.length,incoming.getAddress(),incoming.getPort());
 					socket.send(dp);
-					System.out.println("STIM! t4:" + now);
 				}
 			} catch (final Exception e) {
 				EventBus.instance().post(new NewNotificationEvent(NotificationType.UDP_ERROR));

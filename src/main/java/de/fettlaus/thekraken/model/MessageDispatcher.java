@@ -16,9 +16,6 @@ public class MessageDispatcher implements Runnable {
 	@Override
 	public void run() {
 		Message msg;
-		Message msg1 = new KrakenMessage(MessageType.PING, 23, "");
-		Message msg2 = new KrakenMessage(MessageType.PING, 23, "");
-		System.out.println(msg1.compareTo(msg2));
 		while (true) {
 				if(messages.size()>50){
 					msg = messages.first();

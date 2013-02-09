@@ -114,6 +114,7 @@ public class GuiView implements View {
 	private final EventBus evt;
 	private JPanel panel_host;
 	private JScrollPane scrollPane_host;
+	private JTextArea textArea_host;
 
 	/**
 	 * Create the application.
@@ -127,7 +128,7 @@ public class GuiView implements View {
 	public void addHostMessage(String timestamp, String msg) {
 		final StringBuilder b = new StringBuilder();
 		b.append(timestamp).append(" >> ").append(msg).append("\n");
-		textArea_messages.append(b.toString());
+		textArea_host.append(b.toString());
 	}
 
 	@Override
@@ -537,7 +538,7 @@ public class GuiView implements View {
 		scrollPane_host.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panel_host.add(scrollPane_host);
 
-		final JTextArea textArea_host = new JTextArea();
+		textArea_host = new JTextArea();
 		scrollPane_host.setViewportView(textArea_host);
 
 		textField_message = new JTextField();
