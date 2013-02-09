@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+
 import com.google.common.base.Charsets;
 
 public class KrakenMessage implements Message {
@@ -14,9 +15,10 @@ public class KrakenMessage implements Message {
 	private long timestamp;
 
 	private Connection source;
-	
+
 	/**
 	 * This constructor is used by a receiving udp socket.
+	 * 
 	 * @param source
 	 */
 	public KrakenMessage() {
@@ -25,6 +27,7 @@ public class KrakenMessage implements Message {
 
 	/**
 	 * This constructor is only used by the receiving end.
+	 * 
 	 * @param source
 	 */
 	public KrakenMessage(Connection source) {
@@ -34,10 +37,24 @@ public class KrakenMessage implements Message {
 	}
 
 	/**
+	 * This constructor is used to send a message without text without timestamp
+	 * 
+	 * @param type
+	 *            Type of message
+	 */
+	public KrakenMessage(MessageType type) {
+		this(type, "");
+	}
+
+	/**
 	 * Fully specify a Message.
-	 * @param type Type of Message
-	 * @param timestamp Timestamp of message
-	 * @param message Text of Message
+	 * 
+	 * @param type
+	 *            Type of Message
+	 * @param timestamp
+	 *            Timestamp of message
+	 * @param message
+	 *            Text of Message
 	 */
 	public KrakenMessage(MessageType type, long timestamp, String message) {
 		super();
@@ -45,9 +62,10 @@ public class KrakenMessage implements Message {
 		this.timestamp = timestamp;
 		body = message;
 	}
-	
+
 	/**
 	 * This constructor generates the needed timestamp by itself
+	 * 
 	 * @param type
 	 * @param message
 	 */
@@ -55,13 +73,12 @@ public class KrakenMessage implements Message {
 		// calc own timestamp
 		this(type, TimeKeeper.time(), message);
 	}
-	
-	/**
-	 * This constructor is used to send a message without text without timestamp
-	 * @param type Type of message
-	 */
-	public KrakenMessage(MessageType type){
-		this(type,"");
+
+	@Override
+	public int compareTo(Message arg0) {
+		// TODO Auto-generated method stub
+		final long comp = timestamp - arg0.getTimestamp();
+		return comp < 0 ? -1 : comp > 0 ? 1 : 0;
 	}
 
 	@Override
@@ -103,6 +120,16 @@ public class KrakenMessage implements Message {
 		}
 	}
 
+	public byte[] toByteArray() {
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			write(new DataOutputStream(baos));
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		return baos.toByteArray();
+	}
+
 	@Override
 	public String toString() {
 		return "Message(" + type + "," + body.length() + "," + timestamp + ")=" + "\"" + body + "\"";
@@ -114,22 +141,12 @@ public class KrakenMessage implements Message {
 		arg0.writeByte(type.getValue());
 		arg0.writeShort(body_tmp.length);
 		arg0.writeLong(timestamp);
-		//TODO check for type not length
+		// TODO check for type not length
 		if (body_tmp.length > 0) {
 			arg0.write(body_tmp, 0, body_tmp.length);
 		}
 		arg0.flush();
 
-	}
-	
-	public byte[] toByteArray(){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			write(new DataOutputStream(baos));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return baos.toByteArray();
 	}
 
 }

@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public interface Message {
+public interface Message extends Comparable<Message>{
 	public static final int HEADER_LENGTH = 11;
 	public static final int MAX_BODY_LENGTH = 512;
 
