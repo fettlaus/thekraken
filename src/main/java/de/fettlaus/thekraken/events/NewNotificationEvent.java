@@ -1,5 +1,7 @@
 package de.fettlaus.thekraken.events;
 
+import de.fettlaus.thekraken.model.TimeKeeper;
+
 public class NewNotificationEvent implements ModelEvent {
 	public enum NotificationType {
 		NO_HOST_FOUND, 
@@ -11,7 +13,9 @@ public class NewNotificationEvent implements ModelEvent {
 	}
 
 	NotificationType type;
+
 	String message;
+	long timestamp;
 
 	public NewNotificationEvent(NotificationType type) {
 		this(type, null);
@@ -21,10 +25,15 @@ public class NewNotificationEvent implements ModelEvent {
 		super();
 		this.type = type;
 		this.message = message;
+		timestamp = TimeKeeper.time();
 	}
 
 	public String getMessage() {
 		return message;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
 	}
 
 	public NotificationType getType() {
