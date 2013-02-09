@@ -111,7 +111,9 @@ public class GuiView implements View {
 	private JRadioButton radio_message_target;
 
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
-	private EventBus evt;
+	private final EventBus evt;
+	private JPanel panel_host;
+	private JScrollPane scrollPane_host;
 
 	/**
 	 * Create the application.
@@ -119,6 +121,13 @@ public class GuiView implements View {
 	public GuiView() {
 		evt = EventBus.instance();
 		initialize();
+	}
+
+	@Override
+	public void addHostMessage(String timestamp, String msg) {
+		final StringBuilder b = new StringBuilder();
+		b.append(timestamp).append(" >> ").append(msg).append("\n");
+		textArea_messages.append(b.toString());
 	}
 
 	@Override
@@ -427,6 +436,7 @@ public class GuiView implements View {
 
 		button_disconnect = new JButton();
 		button_disconnect.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				evt.post(new CloseConnectionEvent(list_targets.getSelectedIndex()));
 			}
@@ -518,6 +528,18 @@ public class GuiView implements View {
 		textArea_uart.setColumns(2);
 		scrollPane_uart.setViewportView(textArea_uart);
 
+		panel_host = new JPanel();
+		tabbedPane_messages.addTab(Messages.getString("View.panel_host.title"), null, panel_host, null); //$NON-NLS-1$
+		panel_host.setLayout(new BorderLayout(0, 0));
+
+		scrollPane_host = new JScrollPane();
+		scrollPane_host.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane_host.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel_host.add(scrollPane_host);
+
+		final JTextArea textArea_host = new JTextArea();
+		scrollPane_host.setViewportView(textArea_host);
+
 		textField_message = new JTextField();
 		textField_message.setDocument(new TextFieldLimit(512));
 		textField_message.addKeyListener(new KeyAdapter() {
@@ -573,6 +595,7 @@ public class GuiView implements View {
 
 		button_synchronize = new JButton();
 		button_synchronize.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				evt.post(new SynchronizeClientsEvent());
 			}
@@ -622,9 +645,9 @@ public class GuiView implements View {
 		radio_message_all.setText(Messages.getString("View.radio_message_all.text")); //$NON-NLS-1$
 		tabbedPane_messages.setTitleAt(0, Messages.getString("View.panel_messages.title"));
 		tabbedPane_messages.setTitleAt(1, Messages.getString("View.panel_uart.title"));
+		tabbedPane_messages.setTitleAt(2, Messages.getString("View.panel_host.title"));
 		textField_connect.setText(Messages.getString("View.textField_connect.text"));
 		textField_port.setText(Messages.getString("View.textField_port.text"));
 
 	}
-
 }
