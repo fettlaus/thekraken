@@ -38,15 +38,22 @@ public class UDPConnection implements Runnable {
 	public void run() {
 
 		final byte[] buffer = new byte[Message.HEADER_LENGTH + Message.MAX_BODY_LENGTH];
-		final DataInputStream dis = new DataInputStream(new ByteArrayInputStream(buffer));
+		ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+		final DataInputStream dis = new DataInputStream(bais);
 		Message msg = new KrakenMessage();
+		DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
 		while (true) {
 			try {
-				socket.receive(new DatagramPacket(buffer, buffer.length));
+				dis.reset();
+				socket.receive(incoming);
+				long now = TimeKeeper.time();
 				msg.read(dis);
 				if (msg.getType() == MessageType.PONG) {
-					msg = new KrakenMessage(MessageType.STIM, msg.getTimestamp(), "");
-					System.out.println("STIM!");
+					KrakenMessage out = new KrakenMessage(MessageType.STIM, now, "");
+					byte[] buf = out.toByteArray();
+					DatagramPacket dp = new DatagramPacket(buf, buf.length,incoming.getAddress(),incoming.getPort());
+					socket.send(dp);
+					System.out.println("STIM! t4:" + now);
 				}
 			} catch (final Exception e) {
 				EventBus.instance().post(new NewNotificationEvent(NotificationType.UDP_ERROR));

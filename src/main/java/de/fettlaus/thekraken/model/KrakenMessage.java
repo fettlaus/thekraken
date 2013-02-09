@@ -1,10 +1,10 @@
 package de.fettlaus.thekraken.model;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-
 import com.google.common.base.Charsets;
 
 public class KrakenMessage implements Message {
@@ -120,6 +120,16 @@ public class KrakenMessage implements Message {
 		}
 		arg0.flush();
 
+	}
+	
+	public byte[] toByteArray(){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			write(new DataOutputStream(baos));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return baos.toByteArray();
 	}
 
 }
