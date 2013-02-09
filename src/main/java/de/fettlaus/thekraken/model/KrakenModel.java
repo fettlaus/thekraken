@@ -5,10 +5,10 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
+import java.util.SortedSet;
+import java.util.TreeSet;
 import com.google.common.eventbus.Subscribe;
 
 import de.fettlaus.thekraken.events.EventBus;
@@ -17,16 +17,16 @@ import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
 public class KrakenModel implements Model {
-	public static final int BUFFER_SIZE = 20;
+	public static final int BUFFER_SIZE = 100;
 	List<Connection> connections;
-	BlockingQueue<Message> messages;
+	SortedSet<Message> messages;
 	MessageDispatcher disp;
 	EventBus evtbus;
 	UDPConnection udp;
 
 	public KrakenModel() throws SocketException {
 		connections = new ArrayList<Connection>();
-		messages = new ArrayBlockingQueue<Message>(BUFFER_SIZE);
+		messages = Collections.synchronizedSortedSet(new TreeSet<Message>());
 		disp = new MessageDispatcher(messages);
 		new Thread(disp).start();
 		evtbus = EventBus.instance();
@@ -97,7 +97,8 @@ public class KrakenModel implements Model {
 		TimeKeeper.reset();
 		for (final Connection con : connections) {
 			try {
-				udp.sendPing(con);
+				for(int i = 0;i<21;i++)
+					udp.sendPing(con);
 			} catch (final IOException e) {
 				evtbus.post(new NewNotificationEvent(NotificationType.CANT_SEND_UDP));
 			}

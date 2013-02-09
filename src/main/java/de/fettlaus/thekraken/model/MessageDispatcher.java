@@ -1,29 +1,39 @@
 package de.fettlaus.thekraken.model;
 
-import java.util.concurrent.BlockingQueue;
-
+import java.util.SortedSet;
 import de.fettlaus.thekraken.events.EventBus;
 
 public class MessageDispatcher implements Runnable {
 
-	private final BlockingQueue<Message> messages;
+	private final SortedSet<Message> messages;
 	EventBus evt;
 	
-	public MessageDispatcher(BlockingQueue<Message> messages) {
-		this.messages = messages;
+	public MessageDispatcher(SortedSet<Message> messages2) {
+		this.messages = messages2;
 		evt = EventBus.instance();
 	}
 
 	@Override
 	public void run() {
 		Message msg;
+		Message msg1 = new KrakenMessage(MessageType.PING, 23, "");
+		Message msg2 = new KrakenMessage(MessageType.PING, 23, "");
+		System.out.println(msg1.compareTo(msg2));
 		while (true) {
-			try {
-				msg = messages.take();
-				evt.post(msg);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
+				if(messages.size()>50){
+					msg = messages.first();
+					messages.remove(msg);
+					evt.post(msg);
+				}else{
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					System.out.println(messages.size());
+				}
+			
 		}
 
 	}

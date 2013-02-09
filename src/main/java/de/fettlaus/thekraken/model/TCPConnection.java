@@ -8,8 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
-
+import java.util.SortedSet;
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.LostConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
@@ -19,11 +18,11 @@ public class TCPConnection implements Connection {
 	Socket echoSocket = null;
 	DataOutputStream out = null;
 	DataInputStream in = null;
-	BlockingQueue<Message> messages = null;
+	SortedSet<Message> messages = null;
 	InetAddress address = null;
 	int port;
 
-	public TCPConnection(InetAddress ip, int port, BlockingQueue<Message> messages) {
+	public TCPConnection(InetAddress ip, int port, SortedSet<Message> messages) {
 		address = ip;
 		this.port = port;
 		this.messages = messages;
