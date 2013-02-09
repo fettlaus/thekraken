@@ -1,16 +1,10 @@
 package de.fettlaus.thekraken.events;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class EventBus extends com.google.common.eventbus.AsyncEventBus {
-	private static EventBus instance = new EventBus(new Executor() {
-		
-		@Override
-		public void execute(Runnable r) {
-			new Thread(r).start();
-			
-		}
-	});
+	private static EventBus instance = new EventBus( Executors.newFixedThreadPool(2));
 
 	public static EventBus instance() {
 		return instance;
