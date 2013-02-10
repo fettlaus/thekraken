@@ -17,7 +17,7 @@ public class MessageDispatcher implements Runnable {
 	public void run() {
 		Message msg;
 		while (true) {
-				if(messages.size()>50){
+				if(messages.size()>100){
 					msg = messages.first();
 					messages.remove(msg);
 					evt.post(msg);
