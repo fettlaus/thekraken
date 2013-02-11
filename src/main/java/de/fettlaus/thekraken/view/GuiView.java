@@ -441,6 +441,11 @@ public class GuiView implements View {
 						panel.add(button_disconnect);
 						
 						button_shutdown = new JButton(Messages.getString("View.button_shutdown.text"));
+						button_shutdown.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
+								evt.post(new TargetEvent(TargetEventType.SHUTDOWN,list_targets.getSelectedIndex()));
+							}
+						});
 						panel.add(button_shutdown);
 						button_disconnect.addActionListener(new ActionListener() {
 							@Override
