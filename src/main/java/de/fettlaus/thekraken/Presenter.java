@@ -5,13 +5,13 @@ import java.util.List;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 
-import de.fettlaus.thekraken.events.CloseConnectionEvent;
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
-import de.fettlaus.thekraken.events.SendPingEvent;
 import de.fettlaus.thekraken.events.SynchronizeClientsEvent;
+import de.fettlaus.thekraken.events.TargetEvent;
+import de.fettlaus.thekraken.events.TargetEvent.TargetEventType;
 import de.fettlaus.thekraken.model.Connection;
 import de.fettlaus.thekraken.model.KrakenMessage;
 import de.fettlaus.thekraken.model.Message;
@@ -36,14 +36,6 @@ public class Presenter {
 	@Subscribe
 	public void deadHandler(DeadEvent dead) {
 		System.out.println("Missed event: " + dead.getEvent().toString());
-	}
-
-	@Subscribe
-	public void handleCloseConnection(CloseConnectionEvent evt) {
-		final Connection con = model.getConnection(evt.getConnection());
-		if (con != null) {
-			con.close();
-		}
 	}
 
 	@Subscribe
@@ -115,18 +107,25 @@ public class Presenter {
 	}
 
 	@Subscribe
-	public void handleSendPing(SendPingEvent evt) {
-		final Connection con = model.getConnection(evt.getConnection());
-		if (con != null) {
-			pingpongdiff = System.nanoTime();
-			con.sendMessage(new KrakenMessage(MessageType.PING));
-		}
-
+	public void handleSynchronizeClients(SynchronizeClientsEvent evt) {
+		model.synchronizeClients();
 	}
 
 	@Subscribe
-	public void handleSynchronizeClients(SynchronizeClientsEvent evt) {
-		model.synchronizeClients();
+	public void handleTargetEvent(TargetEvent evt) {
+		final Connection con = model.getConnection(evt.getConnection());
+		final TargetEventType type = evt.getType();
+		if (con != null) {
+			if (type == TargetEventType.DISCONNECT) {
+				con.close();
+			} else if (type == TargetEventType.PING) {
+				pingpongdiff = System.nanoTime();
+				con.sendMessage(new KrakenMessage(MessageType.PING));
+			} else if (type == TargetEventType.SHUTDOWN) {
+				con.sendMessage(new KrakenMessage(MessageType.EXIT));
+			}
+		}
+
 	}
 
 }

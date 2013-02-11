@@ -44,12 +44,14 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.PlainDocument;
 
-import de.fettlaus.thekraken.events.CloseConnectionEvent;
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.NewConnectionEvent;
 import de.fettlaus.thekraken.events.SendMessageEvent;
-import de.fettlaus.thekraken.events.SendPingEvent;
 import de.fettlaus.thekraken.events.SynchronizeClientsEvent;
+import de.fettlaus.thekraken.events.TargetEvent;
+import de.fettlaus.thekraken.events.TargetEvent.TargetEventType;
+
+import java.awt.GridLayout;
 
 public class GuiView implements View {
 
@@ -115,6 +117,8 @@ public class GuiView implements View {
 	private JPanel panel_host;
 	private JScrollPane scrollPane_host;
 	private JTextArea textArea_host;
+	private JButton button_shutdown;
+	private JPanel panel;
 
 	/**
 	 * Create the application.
@@ -255,13 +259,13 @@ public class GuiView implements View {
 		final JPanel panel_targets = new JPanel();
 		final GridBagConstraints gbc_panel_targets = new GridBagConstraints();
 		gbc_panel_targets.fill = GridBagConstraints.VERTICAL;
-		gbc_panel_targets.insets = new Insets(2, 2, 2, 2);
+		gbc_panel_targets.insets = new Insets(2, 2, 5, 2);
 		gbc_panel_targets.gridx = 2;
 		gbc_panel_targets.gridy = 1;
 		panel_main.add(panel_targets, gbc_panel_targets);
 		final GridBagLayout gbl_panel_targets = new GridBagLayout();
 		gbl_panel_targets.columnWidths = new int[] { 0, 0, 0 };
-		gbl_panel_targets.columnWeights = new double[] { 0.0, 1.0, 0.0 };
+		gbl_panel_targets.columnWeights = new double[] { 0.0, 1.0, 1.0 };
 		gbl_panel_targets.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 		panel_targets.setLayout(gbl_panel_targets);
 
@@ -304,7 +308,7 @@ public class GuiView implements View {
 			}
 		});
 		final GridBagConstraints gbc_textField_port = new GridBagConstraints();
-		gbc_textField_port.insets = new Insets(2, 2, 2, 2);
+		gbc_textField_port.insets = new Insets(2, 2, 5, 5);
 		gbc_textField_port.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_port.gridx = 1;
 		gbc_textField_port.gridy = 2;
@@ -324,7 +328,7 @@ public class GuiView implements View {
 		scrollPane_targets.setMaximumSize(new Dimension(30, 32767));
 		scrollPane_targets.setPreferredSize(new Dimension(30, 3));
 		final GridBagConstraints gbc_scrollPane_targets = new GridBagConstraints();
-		gbc_scrollPane_targets.insets = new Insets(2, 2, 0, 2);
+		gbc_scrollPane_targets.insets = new Insets(2, 2, 5, 2);
 		gbc_scrollPane_targets.weighty = 1.0;
 		gbc_scrollPane_targets.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_targets.gridwidth = 3;
@@ -397,7 +401,7 @@ public class GuiView implements View {
 		final GridBagConstraints gbc_textField_connect = new GridBagConstraints();
 		gbc_textField_connect.weightx = 0.5;
 		gbc_textField_connect.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_connect.insets = new Insets(2, 2, 2, 2);
+		gbc_textField_connect.insets = new Insets(2, 2, 5, 5);
 		gbc_textField_connect.gridx = 1;
 		gbc_textField_connect.gridy = 1;
 		panel_targets.add(textField_connect, gbc_textField_connect);
@@ -415,39 +419,41 @@ public class GuiView implements View {
 		gbc_button_connect.gridheight = 2;
 		gbc_button_connect.weightx = 0.5;
 		gbc_button_connect.fill = GridBagConstraints.BOTH;
-		gbc_button_connect.insets = new Insets(2, 2, 2, 2);
+		gbc_button_connect.insets = new Insets(2, 2, 5, 2);
 		gbc_button_connect.gridx = 2;
 		gbc_button_connect.gridy = 1;
 		panel_targets.add(button_connect, gbc_button_connect);
-
-		button_ping = new JButton();
-		button_ping.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				evt.post(new SendPingEvent(list_targets.getSelectedIndex()));
-			}
-		});
-		final GridBagConstraints gbc_button_ping = new GridBagConstraints();
-		gbc_button_ping.gridwidth = 2;
-		gbc_button_ping.insets = new Insets(2, 2, 2, 5);
-		gbc_button_ping.fill = GridBagConstraints.HORIZONTAL;
-		gbc_button_ping.gridx = 0;
-		gbc_button_ping.gridy = 6;
-		panel_targets.add(button_ping, gbc_button_ping);
-
-		button_disconnect = new JButton();
-		button_disconnect.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				evt.post(new CloseConnectionEvent(list_targets.getSelectedIndex()));
-			}
-		});
-		final GridBagConstraints gbc_button_disconnect = new GridBagConstraints();
-		gbc_button_disconnect.insets = new Insets(2, 2, 2, 2);
-		gbc_button_disconnect.fill = GridBagConstraints.HORIZONTAL;
-		gbc_button_disconnect.gridx = 2;
-		gbc_button_disconnect.gridy = 6;
-		panel_targets.add(button_disconnect, gbc_button_disconnect);
+		
+		panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(2, 2, 2, 2);
+		gbc_panel.gridwidth = 3;
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 6;
+		panel_targets.add(panel, gbc_panel);
+				panel.setLayout(new GridLayout(2, 2, 5, 7));
+		
+				button_ping = new JButton();
+				panel.add(button_ping);
+				
+						button_disconnect = new JButton();
+						panel.add(button_disconnect);
+						
+						button_shutdown = new JButton(Messages.getString("View.button_shutdown.text"));
+						panel.add(button_shutdown);
+						button_disconnect.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								evt.post(new TargetEvent(TargetEventType.DISCONNECT, list_targets.getSelectedIndex()));
+							}
+						});
+				button_ping.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						evt.post(new TargetEvent(TargetEventType.PING,list_targets.getSelectedIndex()));
+					}
+				});
 
 		final JPanel panel_status = new JPanel();
 		final GridBagConstraints gbc_panel_status = new GridBagConstraints();
@@ -475,7 +481,7 @@ public class GuiView implements View {
 
 		panel_common = new JPanel();
 		final GridBagConstraints gbc_panel_common = new GridBagConstraints();
-		gbc_panel_common.insets = new Insets(2, 2, 2, 2);
+		gbc_panel_common.insets = new Insets(2, 2, 5, 5);
 		gbc_panel_common.fill = GridBagConstraints.BOTH;
 		gbc_panel_common.gridx = 0;
 		gbc_panel_common.gridy = 1;
@@ -630,6 +636,7 @@ public class GuiView implements View {
 		button_ping.setText(Messages.getString("View.button_ping.text"));
 		button_synchronize.setText(Messages.getString("View.button_synchronize.text"));
 		button_message.setText(Messages.getString("View.btn_message.text"));
+		button_shutdown.setText(Messages.getString("View.button_shutdown.text"));
 		form_main.setTitle(Messages.getString("View.form_main.title"));
 		label_addtarget.setText(Messages.getString("View.label_addtarget.text"));
 		label_ip.setText(Messages.getString("View.label_ip.text"));
