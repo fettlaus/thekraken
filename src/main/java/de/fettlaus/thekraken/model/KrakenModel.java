@@ -97,10 +97,15 @@ public class KrakenModel implements Model {
 		TimeKeeper.reset();
 		for (final Connection con : connections) {
 			try {
-				for(int i = 0;i<21;i++)
+				for(int i = 0;i<21;i++){
 					udp.sendPing(con);
+					Thread.sleep(100);
+				}
 			} catch (final IOException e) {
 				evtbus.post(new NewNotificationEvent(NotificationType.CANT_SEND_UDP));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
