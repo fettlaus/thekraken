@@ -13,6 +13,8 @@ public class KrakenMessage implements Message {
 
 	private MessageType type;
 	private long timestamp;
+	private long payload;
+	private boolean udp;
 
 	private Connection source;
 
@@ -23,6 +25,18 @@ public class KrakenMessage implements Message {
 	 */
 	public KrakenMessage() {
 		this(MessageType.ERROR, 0l, "");
+	}
+	
+	/**
+	 * This constructor is used by a UDP socket. (Only relevant for sending packets)
+	 * @param type Type of Message
+	 * @param sequence current udp sequence
+	 * @param timestamp payload
+	 */
+	public KrakenMessage(MessageType type, long sequence, long timestamp){
+		this(type,sequence,"");
+		udp = true;
+		payload = timestamp;
 	}
 
 	/**
@@ -139,11 +153,17 @@ public class KrakenMessage implements Message {
 	public void write(DataOutputStream arg0) throws IOException {
 		final byte[] body_tmp = body.getBytes(Charsets.US_ASCII);
 		arg0.writeByte(type.getValue());
-		arg0.writeShort(body_tmp.length);
-		arg0.writeLong(timestamp);
-		// TODO check for type not length
-		if (body_tmp.length > 0) {
-			arg0.write(body_tmp, 0, body_tmp.length);
+		if(udp){
+			arg0.writeShort(8);
+			arg0.writeLong(timestamp);
+			arg0.writeLong(payload);
+		}else{
+			arg0.writeShort(body_tmp.length);
+			arg0.writeLong(timestamp);
+			// TODO check for type not length
+			if (body_tmp.length > 0) {
+				arg0.write(body_tmp, 0, body_tmp.length);
+			}
 		}
 		arg0.flush();
 
