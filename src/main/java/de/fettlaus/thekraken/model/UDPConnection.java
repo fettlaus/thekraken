@@ -49,7 +49,7 @@ public class UDPConnection implements Runnable {
 				long now = TimeKeeper.time();
 				msg.read(dis);
 				if (msg.getType() == MessageType.PONG) {
-					KrakenMessage out = new KrakenMessage(MessageType.STIM, now, "");
+					KrakenMessage out = new KrakenMessage(MessageType.STIM, msg.getTimestamp(), now);
 					byte[] buf = out.toByteArray();
 					DatagramPacket dp = new DatagramPacket(buf, buf.length,incoming.getAddress(),incoming.getPort());
 					socket.send(dp);
@@ -64,7 +64,7 @@ public class UDPConnection implements Runnable {
 	public synchronized void sendPing(Connection con) throws IOException {
 		// create high-precision ping
 		baos.reset();
-		final Message ping = new KrakenMessage(MessageType.PING, TimeKeeper.time(), "");
+		final Message ping = new KrakenMessage(MessageType.PING, TimeKeeper.time(), 1l);
 		ping.write(dos);
 		final byte[] out = baos.toByteArray();
 		socket.send(new DatagramPacket(out, out.length, con.getAddress(), con.getPort()));
