@@ -9,7 +9,8 @@ public class NewNotificationEvent implements ModelEvent {
 		NEW_CONNECTION, 
 		CANT_SEND_UDP, 
 		CANT_CONNECT_TO_HOST, 
-		UDP_ERROR;
+		UDP_ERROR,
+		BUFFER_CHANGED;
 	}
 
 	NotificationType type;

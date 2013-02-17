@@ -70,7 +70,14 @@ public class KrakenModel implements Model {
 		final Connection connection = evt.getConnection();
 		connection.close();
 		connections.remove(connection);
+		update_buffer_size();
 		evtbus.post(connections);
+	}
+	
+	void update_buffer_size(){
+		int newsize = connections.size()*3;
+		disp.set_buffer(newsize);
+		evtbus.post(new NewNotificationEvent(NotificationType.BUFFER_CHANGED, String.valueOf(newsize)));
 	}
 
 	@Override
@@ -82,6 +89,7 @@ public class KrakenModel implements Model {
 				connections.add(con);
 				evtbus.post(new NewNotificationEvent(NotificationType.NEW_CONNECTION, ip + ":" + port));
 				evtbus.post(connections);
+				update_buffer_size();
 			} catch (final IOException e) {
 				evtbus.post(new NewNotificationEvent(NotificationType.CANT_CONNECT_TO_HOST, ip + ":" + port));
 				con.close();
@@ -94,6 +102,7 @@ public class KrakenModel implements Model {
 
 	@Override
 	public void synchronizeClients() {
+		disp.set_dispatching(false);
 		TimeKeeper.reset();
 		for (final Connection con : connections) {
 			try {
@@ -108,6 +117,8 @@ public class KrakenModel implements Model {
 				e.printStackTrace();
 			}
 		}
+		messages.clear();
+		disp.set_dispatching(true);
 
 	}
 
