@@ -267,6 +267,11 @@ public class GuiView implements View {
 			radio_language_en_us.setSelected(true);
 		}
 		menuItem_file_close = new JMenuItem();
+		menuItem_file_close.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 		menu_file.add(menuItem_file_close);
 
 		menu_help = new JMenu();
