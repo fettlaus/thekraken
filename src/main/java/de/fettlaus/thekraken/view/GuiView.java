@@ -52,6 +52,10 @@ import de.fettlaus.thekraken.events.TargetEvent;
 import de.fettlaus.thekraken.events.TargetEvent.TargetEventType;
 
 import java.awt.GridLayout;
+import java.awt.Color;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.JCheckBoxMenuItem;
 
 public class GuiView implements View {
 
@@ -119,7 +123,15 @@ public class GuiView implements View {
 	private JTextArea textArea_host;
 	private JButton button_shutdown;
 	private JPanel panel;
-
+	private JPanel panel_sendmessage;
+	private JPanel panel_sendmessage_type;
+	private JPanel panel_sendmessage_target;
+	private JRadioButton radio_message_uart;
+	private JRadioButton radio_message_message;
+	private final ButtonGroup buttonGroup_2 = new ButtonGroup();
+	private JMenuItem menuItem_clear;
+	private JCheckBoxMenuItem menuItem_capture;
+	protected boolean capture = true;
 	/**
 	 * Create the application.
 	 */
@@ -130,25 +142,29 @@ public class GuiView implements View {
 
 	@Override
 	public void addHostMessage(String timestamp, String msg) {
-		final StringBuilder b = new StringBuilder();
-		b.append(timestamp).append(" >> ").append(msg).append("\n");
-		textArea_host.append(b.toString());
+		if(capture){
+			final StringBuilder b = new StringBuilder();
+			b.append(timestamp).append(" >> ").append(msg).append("\n");
+			textArea_host.append(b.toString());
+		}
 	}
 
 	@Override
 	public void addLogmessage(String timestamp, String target, String msg) {
-		final StringBuilder b = new StringBuilder();
-		b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
-		textArea_messages.append(b.toString());
-
+		if(capture){
+			final StringBuilder b = new StringBuilder();
+			b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
+			textArea_messages.append(b.toString());
+		}
 	}
 
 	@Override
 	public void addUARTMessage(String timestamp, String target, String msg) {
-		final StringBuilder b = new StringBuilder();
-		b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
-		textArea_uart.append(b.toString());
-
+		if(capture){
+			final StringBuilder b = new StringBuilder();
+			b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
+			textArea_uart.append(b.toString());
+		}
 	}
 
 	@Override
@@ -172,7 +188,7 @@ public class GuiView implements View {
 	private void initialize() {
 		form_main = new JFrame();
 		form_main.setMinimumSize(new Dimension(500, 300));
-		form_main.setBounds(100, 100, 864, 531);
+		form_main.setBounds(100, 100, 943, 586);
 		form_main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		final JPanel panel_main = new JPanel();
@@ -195,6 +211,25 @@ public class GuiView implements View {
 
 		menu_file = new JMenu();
 		menuBar_main.add(menu_file);
+		
+		menuItem_clear = new JMenuItem(Messages.getString("View.menuItem.clear")); //$NON-NLS-1$
+		menuItem_clear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textArea_host.setText("");
+				textArea_messages.setText("");
+				textArea_uart.setText("");
+			}
+		});
+		menu_file.add(menuItem_clear);
+		
+		menuItem_capture = new JCheckBoxMenuItem(Messages.getString("View.menuItem.capture")); //$NON-NLS-1$
+		menuItem_capture.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				capture  = menuItem_capture.isSelected();
+			}
+		});
+		menuItem_capture.setSelected(true);
+		menu_file.add(menuItem_capture);
 
 		menu_language = new JMenu();
 		menu_file.add(menu_language);
@@ -492,13 +527,12 @@ public class GuiView implements View {
 		gbc_panel_common.gridy = 1;
 		panel_main.add(panel_common, gbc_panel_common);
 		final GridBagLayout gbl_panel_common = new GridBagLayout();
-		gbl_panel_common.columnWeights = new double[] { 1.0, 0.0, 0.0 };
-		gbl_panel_common.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0 };
+		gbl_panel_common.columnWeights = new double[] { 1.0 };
+		gbl_panel_common.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 		panel_common.setLayout(gbl_panel_common);
 
 		tabbedPane_messages = new JTabbedPane(SwingConstants.TOP);
 		final GridBagConstraints gbc_tabbedPane_messages = new GridBagConstraints();
-		gbc_tabbedPane_messages.gridwidth = 3;
 		gbc_tabbedPane_messages.weighty = 1.0;
 		gbc_tabbedPane_messages.weightx = 1.0;
 		gbc_tabbedPane_messages.fill = GridBagConstraints.BOTH;
@@ -552,59 +586,6 @@ public class GuiView implements View {
 		textArea_host = new JTextArea();
 		scrollPane_host.setViewportView(textArea_host);
 
-		textField_message = new JTextField();
-		textField_message.setDocument(new TextFieldLimit(512));
-		textField_message.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					sendMessage();
-				}
-			}
-		});
-		textField_message.setText("");
-		final GridBagConstraints gbc_textField_message = new GridBagConstraints();
-		gbc_textField_message.gridheight = 2;
-		gbc_textField_message.insets = new Insets(2, 2, 5, 5);
-		gbc_textField_message.fill = GridBagConstraints.BOTH;
-		gbc_textField_message.gridx = 0;
-		gbc_textField_message.gridy = 1;
-		panel_common.add(textField_message, gbc_textField_message);
-		textField_message.setColumns(10);
-
-		button_message = new JButton(Messages.getString("View.btn_message.text")); //$NON-NLS-1$
-		button_message.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				sendMessage();
-			}
-		});
-
-		radio_message_all = new JRadioButton(Messages.getString("radio_message_all.text"));
-		radio_message_all.setSelected(true);
-		buttonGroup_1.add(radio_message_all);
-		radio_message_all.setVerticalAlignment(SwingConstants.TOP);
-		final GridBagConstraints gbc_radio_message_all = new GridBagConstraints();
-		gbc_radio_message_all.anchor = GridBagConstraints.WEST;
-		gbc_radio_message_all.gridx = 1;
-		gbc_radio_message_all.gridy = 1;
-		panel_common.add(radio_message_all, gbc_radio_message_all);
-		final GridBagConstraints gbc_btn_message = new GridBagConstraints();
-		gbc_btn_message.fill = GridBagConstraints.BOTH;
-		gbc_btn_message.gridheight = 2;
-		gbc_btn_message.insets = new Insets(2, 2, 5, 2);
-		gbc_btn_message.gridx = 2;
-		gbc_btn_message.gridy = 1;
-		panel_common.add(button_message, gbc_btn_message);
-
-		radio_message_target = new JRadioButton(Messages.getString("radio_message_target.text")); //$NON-NLS-1$
-		buttonGroup_1.add(radio_message_target);
-		final GridBagConstraints gbc_radio_message_target = new GridBagConstraints();
-		gbc_radio_message_target.anchor = GridBagConstraints.WEST;
-		gbc_radio_message_target.gridx = 1;
-		gbc_radio_message_target.gridy = 2;
-		panel_common.add(radio_message_target, gbc_radio_message_target);
-
 		button_synchronize = new JButton();
 		button_synchronize.addActionListener(new ActionListener() {
 			@Override
@@ -615,11 +596,96 @@ public class GuiView implements View {
 		final GridBagConstraints gbc_button_synchronize = new GridBagConstraints();
 		gbc_button_synchronize.insets = new Insets(2, 2, 2, 2);
 		gbc_button_synchronize.fill = GridBagConstraints.BOTH;
-		gbc_button_synchronize.gridwidth = 3;
 		gbc_button_synchronize.anchor = GridBagConstraints.WEST;
 		gbc_button_synchronize.gridx = 0;
-		gbc_button_synchronize.gridy = 3;
+		gbc_button_synchronize.gridy = 2;
 		panel_common.add(button_synchronize, gbc_button_synchronize);
+		
+		panel_sendmessage = new JPanel();
+		panel_sendmessage.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), Messages.getString("View.panel_sendmessage.borderTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
+		GridBagConstraints gbc_panel_sendmessage = new GridBagConstraints();
+		gbc_panel_sendmessage.fill = GridBagConstraints.HORIZONTAL;
+		gbc_panel_sendmessage.insets = new Insets(2, 2, 5, 5);
+		gbc_panel_sendmessage.gridx = 0;
+		gbc_panel_sendmessage.gridy = 1;
+		panel_common.add(panel_sendmessage, gbc_panel_sendmessage);
+				GridBagLayout gbl_panel_sendmessage = new GridBagLayout();
+				gbl_panel_sendmessage.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0};
+				gbl_panel_sendmessage.rowWeights = new double[]{0.0};
+				panel_sendmessage.setLayout(gbl_panel_sendmessage);
+						
+						panel_sendmessage_type = new JPanel();
+						panel_sendmessage_type.setBorder(new TitledBorder(null, Messages.getString("View.panel_sendmessage_type.borderTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
+						GridBagConstraints gbc_panel_sendmessage_type = new GridBagConstraints();
+						gbc_panel_sendmessage_type.insets = new Insets(0, 0, 5, 5);
+						gbc_panel_sendmessage_type.fill = GridBagConstraints.BOTH;
+						gbc_panel_sendmessage_type.gridx = 0;
+						gbc_panel_sendmessage_type.gridy = 0;
+						panel_sendmessage.add(panel_sendmessage_type, gbc_panel_sendmessage_type);
+						panel_sendmessage_type.setLayout(new GridLayout(0, 1, 0, 0));
+						
+						radio_message_uart = new JRadioButton(Messages.getString("View.radio_message_uart")); //$NON-NLS-1$
+						radio_message_uart.setSelected(true);
+						buttonGroup_2.add(radio_message_uart);
+						panel_sendmessage_type.add(radio_message_uart);
+						
+						radio_message_message = new JRadioButton(Messages.getString("View.radio_message_message")); //$NON-NLS-1$
+						buttonGroup_2.add(radio_message_message);
+						panel_sendmessage_type.add(radio_message_message);
+				
+						textField_message = new JTextField();
+						GridBagConstraints gbc_textField_message = new GridBagConstraints();
+						gbc_textField_message.weightx = 1.0;
+						gbc_textField_message.fill = GridBagConstraints.HORIZONTAL;
+						gbc_textField_message.insets = new Insets(0, 0, 5, 5);
+						gbc_textField_message.gridx = 1;
+						gbc_textField_message.gridy = 0;
+						panel_sendmessage.add(textField_message, gbc_textField_message);
+						textField_message.setDocument(new TextFieldLimit(512));
+						textField_message.addKeyListener(new KeyAdapter() {
+							@Override
+							public void keyPressed(KeyEvent e) {
+								if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+									sendMessage();
+								}
+							}
+						});
+						textField_message.setText("");
+						textField_message.setColumns(10);
+				
+				panel_sendmessage_target = new JPanel();
+				panel_sendmessage_target.setBorder(new TitledBorder(null, Messages.getString("View.panel_sendmessage_target.borderTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
+				GridBagConstraints gbc_panel_sendmessage_target = new GridBagConstraints();
+				gbc_panel_sendmessage_target.fill = GridBagConstraints.BOTH;
+				gbc_panel_sendmessage_target.insets = new Insets(2, 2, 5, 5);
+				gbc_panel_sendmessage_target.gridx = 2;
+				gbc_panel_sendmessage_target.gridy = 0;
+				panel_sendmessage.add(panel_sendmessage_target, gbc_panel_sendmessage_target);
+				panel_sendmessage_target.setLayout(new GridLayout(0, 1, 0, 0));
+				
+						radio_message_target = new JRadioButton(Messages.getString("radio_message_target.text")); //$NON-NLS-1$
+						panel_sendmessage_target.add(radio_message_target);
+						buttonGroup_1.add(radio_message_target);
+						
+								radio_message_all = new JRadioButton(Messages.getString("radio_message_all.text"));
+								panel_sendmessage_target.add(radio_message_all);
+								radio_message_all.setSelected(true);
+								buttonGroup_1.add(radio_message_all);
+								radio_message_all.setVerticalAlignment(SwingConstants.TOP);
+				
+						button_message = new JButton(Messages.getString("View.btn_message.text")); //$NON-NLS-1$
+						GridBagConstraints gbc_button_message = new GridBagConstraints();
+						gbc_button_message.insets = new Insets(2, 2, 5, 2);
+						gbc_button_message.fill = GridBagConstraints.BOTH;
+						gbc_button_message.gridx = 3;
+						gbc_button_message.gridy = 0;
+						panel_sendmessage.add(button_message, gbc_button_message);
+						button_message.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								sendMessage();
+							}
+						});
 		load_strings();
 		form_main.setVisible(true);
 
@@ -630,7 +696,11 @@ public class GuiView implements View {
 		if (radio_message_target.isSelected()) {
 			target = list_targets.getSelectedIndex();
 		}
-		evt.post(new SendMessageEvent(textField_message.getText(), target));
+		if(radio_message_uart.isSelected()){
+			evt.post(new SendMessageEvent(textField_message.getText(), target, true));
+		}else{
+			evt.post(new SendMessageEvent(textField_message.getText(), target, false));
+		}
 		textField_message.setText("");
 		textField_message.requestFocus();
 	}

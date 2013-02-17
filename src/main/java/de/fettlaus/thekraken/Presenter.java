@@ -97,7 +97,13 @@ public class Presenter {
 
 	@Subscribe
 	public void handleSendMessage(SendMessageEvent evt) {
-		final Message msg = new KrakenMessage(MessageType.MESS, evt.getMessage());
+		MessageType sendtype;
+		if(evt.isUart()){
+			sendtype= MessageType.UART;
+		}else{
+			sendtype=MessageType.MESS;
+		}
+		final Message msg = new KrakenMessage(sendtype, evt.getMessage());
 		final int index = evt.getTargetIndex();
 		if (index < 0) {
 			model.broadcastMessage(msg);
