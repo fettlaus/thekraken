@@ -127,9 +127,17 @@ public class KrakenMessage implements Message {
 		final byte[] body_temp = new byte[length];
 
 		timestamp = arg0.readLong();
-
-		if (length > 0) {
-			arg0.read(body_temp, 0, length);
+		
+		
+		if(length > 0){
+			int read = 0;
+			int to_read = length;
+			while(to_read > 0){
+				read = arg0.read(body_temp,length-to_read,to_read);
+				if(read > 0){
+					to_read -= read;
+				}
+			}
 			body = new String(body_temp, Charsets.US_ASCII);
 		}
 	}
