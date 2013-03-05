@@ -132,6 +132,8 @@ public class GuiView implements View {
 	private JMenuItem menuItem_clear;
 	private JCheckBoxMenuItem menuItem_capture;
 	protected boolean capture = true;
+	private JMenu menu_view;
+	private JCheckBoxMenuItem menuItem_diff;
 	/**
 	 * Create the application.
 	 */
@@ -150,19 +152,27 @@ public class GuiView implements View {
 	}
 
 	@Override
-	public void addLogmessage(String timestamp, String target, String msg) {
+	public void addLogmessage(String timestamp, String target, String msg, String diff) {
 		if(capture){
 			final StringBuilder b = new StringBuilder();
-			b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
+			b.append(timestamp).append(" <").append(target).append("> ").append(msg);
+			if(menuItem_diff.isSelected()){
+				b.append(" (diff ").append(diff).append(" ns)");
+			}
+			b.append("\n");
 			textArea_messages.append(b.toString());
 		}
 	}
 
 	@Override
-	public void addUARTMessage(String timestamp, String target, String msg) {
+	public void addUARTMessage(String timestamp, String target, String msg, String diff) {
 		if(capture){
 			final StringBuilder b = new StringBuilder();
-			b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
+			b.append(timestamp).append(" <").append(target).append("> ").append(msg);
+			if(menuItem_diff.isSelected()){
+				b.append(" (diff ").append(diff).append(" ns)");
+			}
+			b.append("\n");
 			textArea_uart.append(b.toString());
 		}
 	}
@@ -208,71 +218,77 @@ public class GuiView implements View {
 		gbc_menuBar_main.gridx = 0;
 		gbc_menuBar_main.gridy = 0;
 		panel_main.add(menuBar_main, gbc_menuBar_main);
-
-		menu_file = new JMenu();
-		menuBar_main.add(menu_file);
 		
-		menuItem_clear = new JMenuItem(Messages.getString("View.menuItem.clear")); //$NON-NLS-1$
-		menuItem_clear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				textArea_host.setText("");
-				textArea_messages.setText("");
-				textArea_uart.setText("");
-			}
-		});
-		menu_file.add(menuItem_clear);
+				menu_file = new JMenu();
+				menuBar_main.add(menu_file);
+				
+				menuItem_clear = new JMenuItem(Messages.getString("View.menuItem.clear")); //$NON-NLS-1$
+				menuItem_clear.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						textArea_host.setText("");
+						textArea_messages.setText("");
+						textArea_uart.setText("");
+					}
+				});
+				menu_file.add(menuItem_clear);
+				
+				menuItem_capture = new JCheckBoxMenuItem(Messages.getString("View.menuItem.capture")); //$NON-NLS-1$
+				menuItem_capture.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						capture  = menuItem_capture.isSelected();
+					}
+				});
+				menuItem_capture.setSelected(true);
+				menu_file.add(menuItem_capture);
+				
+						menu_language = new JMenu();
+						menu_file.add(menu_language);
+						
+								radio_language_en_us = new JRadioButtonMenuItem();
+								radio_language_en_us.addActionListener(new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent arg0) {
+										Locale.setDefault(Locale.ENGLISH);
+										Locale.setDefault(Locale.US);
+										Messages.reloadBundle();
+										GuiView.this.load_strings();
+									}
+								});
+								buttonGroup.add(radio_language_en_us);
+								radio_language_en_us.setSelected(true);
+								menu_language.add(radio_language_en_us);
+								
+										radio_language_de_de = new JRadioButtonMenuItem();
+										buttonGroup.add(radio_language_de_de);
+										radio_language_de_de.addActionListener(new ActionListener() {
+											@Override
+											public void actionPerformed(ActionEvent arg0) {
+												Locale.setDefault(Locale.GERMAN);
+												Locale.setDefault(Locale.GERMANY);
+												Messages.reloadBundle();
+												GuiView.this.load_strings();
+											}
+										});
+										menu_language.add(radio_language_de_de);
+										menuItem_file_close = new JMenuItem();
+										menuItem_file_close.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent arg0) {
+												System.exit(0);
+											}
+										});
+										menu_file.add(menuItem_file_close);
 		
-		menuItem_capture = new JCheckBoxMenuItem(Messages.getString("View.menuItem.capture")); //$NON-NLS-1$
-		menuItem_capture.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				capture  = menuItem_capture.isSelected();
-			}
-		});
-		menuItem_capture.setSelected(true);
-		menu_file.add(menuItem_capture);
-
-		menu_language = new JMenu();
-		menu_file.add(menu_language);
-
-		radio_language_en_us = new JRadioButtonMenuItem();
-		radio_language_en_us.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Locale.setDefault(Locale.ENGLISH);
-				Locale.setDefault(Locale.US);
-				Messages.reloadBundle();
-				GuiView.this.load_strings();
-			}
-		});
-		buttonGroup.add(radio_language_en_us);
-		radio_language_en_us.setSelected(true);
-		menu_language.add(radio_language_en_us);
-
-		radio_language_de_de = new JRadioButtonMenuItem();
-		buttonGroup.add(radio_language_de_de);
-		radio_language_de_de.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				Locale.setDefault(Locale.GERMAN);
-				Locale.setDefault(Locale.GERMANY);
-				Messages.reloadBundle();
-				GuiView.this.load_strings();
-			}
-		});
-		menu_language.add(radio_language_de_de);
+		menu_view = new JMenu(Messages.getString("GuiView.mnNewMenu.text")); //$NON-NLS-1$
+		menuBar_main.add(menu_view);
+		
+		menuItem_diff = new JCheckBoxMenuItem(Messages.getString("View.menuItem.diff")); //$NON-NLS-1$
+		menu_view.add(menuItem_diff);
 		final String lang = Locale.getDefault().getLanguage();
 		if (lang.equals("de")) {
 			radio_language_de_de.setSelected(true);
 		} else {
 			radio_language_en_us.setSelected(true);
 		}
-		menuItem_file_close = new JMenuItem();
-		menuItem_file_close.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
-			}
-		});
-		menu_file.add(menuItem_file_close);
 
 		menu_help = new JMenu();
 		menuBar_main.add(menu_help);
@@ -725,8 +741,10 @@ public class GuiView implements View {
 		menu_file.setText(Messages.getString("View.menu_file.s"));
 		menu_help.setText(Messages.getString("View.menu_help.text"));
 		menu_language.setText(Messages.getString("View.menu_language.text"));
+		menu_view.setText(Messages.getString("View.menu_view.text")); //$NON-NLS-1$
 		menuItem_file_close.setText(Messages.getString("View.menuItem_file_close.text"));
 		menuItem_help_about.setText(Messages.getString("View.menuItem_help_close_1.text"));
+		menuItem_diff.setText(Messages.getString("View.menuItem.diff")); //$NON-NLS-1$
 		radio_language_de_de.setText(Messages.getString("View.radio_language_de_de.text"));
 		radio_language_en_us.setText(Messages.getString("View.radio_language_en_us.text"));
 		radio_message_target.setText(Messages.getString("View.radio_message_target.text")); //$NON-NLS-1$

@@ -70,13 +70,13 @@ public class Presenter {
 			final String connection = msg.getSourceConnection().getAddress().toString();
 			final MessageType type = msg.getType();
 			if (type == MessageType.UART) {
-				view.addUARTMessage(timestamp, connection, msg.getMessage());
+				view.addUARTMessage(timestamp, connection, msg.getMessage(),String.valueOf(msg.getDifference()));
 			} else if (type == MessageType.MESS) {
-				view.addLogmessage(timestamp, connection, "\"" + msg.getMessage() + "\"");
+				view.addLogmessage(timestamp, connection, "\"" + msg.getMessage() + "\"",String.valueOf(msg.getDifference()));
 			} else if (type == MessageType.PONG) {
 				final long diff = System.nanoTime() - pingpongdiff;
-				view.addLogmessage(timestamp, connection, "PONG (" + diff + " ns)");
-				view.addLogmessage(timestamp, connection, String.valueOf(System.nanoTime()));
+				view.addLogmessage(timestamp, connection, "PONG",String.valueOf(diff));
+				view.addLogmessage(timestamp, connection, String.valueOf(System.nanoTime()),"0");
 			}
 		} catch (final ClassCastException e) {
 			e.printStackTrace();

@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.SortedSet;
+
 import de.fettlaus.thekraken.events.EventBus;
 import de.fettlaus.thekraken.events.LostConnectionEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent;
@@ -61,12 +62,15 @@ public class TCPConnection implements Connection {
 
 	@Override
 	public void run() {
-		Message msg;
+		Message msg = new KrakenMessage(this);
+		long lasttimestamp = 0;
 		try {
-			while (true) {
-				msg = new KrakenMessage(this);
+			while (true) {			
 				msg.read(in);
+				msg.setLastTimestamp(lasttimestamp);
+				lasttimestamp = msg.getTimestamp();
 				messages.add(msg);
+				msg = new KrakenMessage(this);
 			}
 		} catch (final IOException e) {
 			EventBus.instance().post(new LostConnectionEvent(this));

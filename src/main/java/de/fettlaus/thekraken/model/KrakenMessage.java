@@ -15,6 +15,7 @@ public class KrakenMessage implements Message {
 	private long timestamp;
 	private long payload;
 	private boolean udp;
+	private long lasttimestamp = 0;
 
 	private Connection source;
 
@@ -25,18 +26,6 @@ public class KrakenMessage implements Message {
 	 */
 	public KrakenMessage() {
 		this(MessageType.ERROR, 0l, "");
-	}
-	
-	/**
-	 * This constructor is used by a UDP socket. (Only relevant for sending packets)
-	 * @param type Type of Message
-	 * @param sequence current udp sequence
-	 * @param timestamp payload
-	 */
-	public KrakenMessage(MessageType type, long sequence, long timestamp){
-		this(type,sequence,"");
-		udp = true;
-		payload = timestamp;
 	}
 
 	/**
@@ -58,6 +47,23 @@ public class KrakenMessage implements Message {
 	 */
 	public KrakenMessage(MessageType type) {
 		this(type, "");
+	}
+
+	/**
+	 * This constructor is used by a UDP socket. (Only relevant for sending
+	 * packets)
+	 * 
+	 * @param type
+	 *            Type of Message
+	 * @param sequence
+	 *            current udp sequence
+	 * @param timestamp
+	 *            payload
+	 */
+	public KrakenMessage(MessageType type, long sequence, long timestamp) {
+		this(type, sequence, "");
+		udp = true;
+		payload = timestamp;
 	}
 
 	/**
@@ -90,9 +96,13 @@ public class KrakenMessage implements Message {
 
 	@Override
 	public int compareTo(Message arg0) {
-		// TODO Auto-generated method stub
 		final long comp = timestamp - arg0.getTimestamp();
 		return comp < 0 ? -1 : comp > 0 ? 1 : 0;
+	}
+
+	@Override
+	public long getDifference() {
+		return timestamp - lasttimestamp;
 	}
 
 	@Override
@@ -127,19 +137,23 @@ public class KrakenMessage implements Message {
 		final byte[] body_temp = new byte[length];
 
 		timestamp = arg0.readLong();
-		
-		
-		if(length > 0){
+
+		if (length > 0) {
 			int read = 0;
 			int to_read = length;
-			while(to_read > 0){
-				read = arg0.read(body_temp,length-to_read,to_read);
-				if(read > 0){
+			while (to_read > 0) {
+				read = arg0.read(body_temp, length - to_read, to_read);
+				if (read > 0) {
 					to_read -= read;
 				}
 			}
 			body = new String(body_temp, Charsets.US_ASCII);
 		}
+	}
+
+	@Override
+	public void setLastTimestamp(long lastTimestamp) {
+		lasttimestamp = lastTimestamp;
 	}
 
 	public byte[] toByteArray() {
@@ -161,11 +175,11 @@ public class KrakenMessage implements Message {
 	public void write(DataOutputStream arg0) throws IOException {
 		final byte[] body_tmp = body.getBytes(Charsets.US_ASCII);
 		arg0.writeByte(type.getValue());
-		if(udp){
+		if (udp) {
 			arg0.writeShort(8);
 			arg0.writeLong(timestamp);
 			arg0.writeLong(payload);
-		}else{
+		} else {
 			arg0.writeShort(body_tmp.length);
 			arg0.writeLong(timestamp);
 			// TODO check for type not length
