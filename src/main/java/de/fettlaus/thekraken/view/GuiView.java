@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -134,6 +135,9 @@ public class GuiView implements View {
 	protected boolean capture = true;
 	private JMenu menu_view;
 	private JCheckBoxMenuItem menuItem_diff;
+	private JCheckBoxMenuItem menuItem_scroll;
+	private JScrollPane scrollPane_uart;
+	private JScrollPane scrollPane_messages;
 	/**
 	 * Create the application.
 	 */
@@ -148,6 +152,10 @@ public class GuiView implements View {
 			final StringBuilder b = new StringBuilder();
 			b.append(timestamp).append(" >> ").append(msg).append("\n");
 			textArea_host.append(b.toString());
+			if(menuItem_scroll.isSelected()){
+				JScrollBar vertical =  scrollPane_host.getVerticalScrollBar();
+				vertical.setValue(vertical.getMaximum());
+			}
 		}
 	}
 
@@ -161,6 +169,10 @@ public class GuiView implements View {
 			}
 			b.append("\n");
 			textArea_messages.append(b.toString());
+			if(menuItem_scroll.isSelected()){
+				JScrollBar vertical =  scrollPane_messages.getVerticalScrollBar();
+				vertical.setValue(vertical.getMaximum());
+			}
 		}
 	}
 
@@ -172,8 +184,13 @@ public class GuiView implements View {
 			if(menuItem_diff.isSelected()){
 				b.append(" (diff ").append(diff).append(" ns)");
 			}
+
 			b.append("\n");
 			textArea_uart.append(b.toString());
+			if(menuItem_scroll.isSelected()){
+				JScrollBar vertical =  scrollPane_uart.getVerticalScrollBar();
+				vertical.setValue(vertical.getMaximum());
+			}
 		}
 	}
 
@@ -280,6 +297,10 @@ public class GuiView implements View {
 		
 		menu_view = new JMenu(Messages.getString("GuiView.mnNewMenu.text")); //$NON-NLS-1$
 		menuBar_main.add(menu_view);
+		
+		menuItem_scroll = new JCheckBoxMenuItem(Messages.getString("View.menuItem_scroll.text")); //$NON-NLS-1$
+		menuItem_scroll.setSelected(true);
+		menu_view.add(menuItem_scroll);
 		
 		menuItem_diff = new JCheckBoxMenuItem(Messages.getString("View.menuItem.diff")); //$NON-NLS-1$
 		menu_view.add(menuItem_diff);
@@ -567,7 +588,7 @@ public class GuiView implements View {
 		tabbedPane_messages.addTab(Messages.getString("View.panel_messages.title"), null, panel_messages, null); //$NON-NLS-1$ 
 		panel_messages.setLayout(new BorderLayout(0, 0));
 
-		final JScrollPane scrollPane_messages = new JScrollPane();
+		scrollPane_messages = new JScrollPane();
 		scrollPane_messages.setAutoscrolls(true);
 		scrollPane_messages.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		scrollPane_messages.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -586,7 +607,7 @@ public class GuiView implements View {
 		tabbedPane_messages.addTab(Messages.getString("View.panel_uart.title"), null, panel_uart, null); //$NON-NLS-1$ 
 		panel_uart.setLayout(new BorderLayout(0, 0));
 
-		final JScrollPane scrollPane_uart = new JScrollPane();
+		scrollPane_uart = new JScrollPane();
 		scrollPane_uart.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		scrollPane_uart.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		panel_uart.add(scrollPane_uart, BorderLayout.CENTER);
@@ -745,6 +766,7 @@ public class GuiView implements View {
 		menuItem_file_close.setText(Messages.getString("View.menuItem_file_close.text"));
 		menuItem_help_about.setText(Messages.getString("View.menuItem_help_close_1.text"));
 		menuItem_diff.setText(Messages.getString("View.menuItem.diff")); //$NON-NLS-1$
+		menuItem_scroll.setText(Messages.getString("View.menuItem_scroll.text"));
 		radio_language_de_de.setText(Messages.getString("View.radio_language_de_de.text"));
 		radio_language_en_us.setText(Messages.getString("View.radio_language_en_us.text"));
 		radio_message_target.setText(Messages.getString("View.radio_message_target.text")); //$NON-NLS-1$
