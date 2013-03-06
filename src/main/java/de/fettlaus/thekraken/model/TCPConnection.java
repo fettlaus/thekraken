@@ -67,8 +67,10 @@ public class TCPConnection implements Connection {
 		try {
 			while (true) {			
 				msg.read(in);
-				msg.setLastTimestamp(lasttimestamp);
-				lasttimestamp = msg.getTimestamp();
+				if(msg.getType() == MessageType.UART){
+					msg.setLastTimestamp(lasttimestamp);
+					lasttimestamp = msg.getTimestamp();	
+				}
 				messages.add(msg);
 				msg = new KrakenMessage(this);
 			}

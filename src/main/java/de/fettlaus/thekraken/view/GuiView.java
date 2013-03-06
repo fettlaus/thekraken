@@ -161,14 +161,10 @@ public class GuiView implements View {
 	}
 
 	@Override
-	public void addLogmessage(String timestamp, String target, String msg, String diff) {
+	public void addLogmessage(String timestamp, String target, String msg) {
 		if(capture){
 			final StringBuilder b = new StringBuilder();
-			b.append(timestamp).append(" <").append(target).append("> ").append(msg);
-			if(menuItem_diff.isSelected()){
-				b.append(" (diff ").append(diff).append(" ns)");
-			}
-			b.append("\n");
+			b.append(timestamp).append(" <").append(target).append("> ").append(msg).append("\n");
 			textArea_messages.append(b.toString());
 			if(menuItem_scroll.isSelected()){
 				JScrollBar vertical =  scrollPane_messages.getVerticalScrollBar();
