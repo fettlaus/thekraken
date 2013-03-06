@@ -138,6 +138,7 @@ public class GuiView implements View {
 	private JCheckBoxMenuItem menuItem_scroll;
 	private JScrollPane scrollPane_uart;
 	private JScrollPane scrollPane_messages;
+	private JCheckBoxMenuItem menuItem_sendmessage;
 	/**
 	 * Create the application.
 	 */
@@ -304,6 +305,18 @@ public class GuiView implements View {
 		
 		menuItem_diff = new JCheckBoxMenuItem(Messages.getString("View.menuItem.diff")); //$NON-NLS-1$
 		menu_view.add(menuItem_diff);
+		
+		menuItem_sendmessage = new JCheckBoxMenuItem(Messages.getString("View.menuItem.sendmessage.text")); //$NON-NLS-1$
+		menuItem_sendmessage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(menuItem_sendmessage.isSelected()){
+					panel_sendmessage.setVisible(true);
+				}else{
+					panel_sendmessage.setVisible(false);
+				}
+			}
+		});
+		menu_view.add(menuItem_sendmessage);
 		final String lang = Locale.getDefault().getLanguage();
 		if (lang.equals("de")) {
 			radio_language_de_de.setSelected(true);
@@ -644,6 +657,7 @@ public class GuiView implements View {
 		panel_common.add(button_synchronize, gbc_button_synchronize);
 		
 		panel_sendmessage = new JPanel();
+		panel_sendmessage.setVisible(false);
 		panel_sendmessage.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), Messages.getString("View.panel_sendmessage.borderTitle"), TitledBorder.LEADING, TitledBorder.TOP, null, null)); //$NON-NLS-1$
 		GridBagConstraints gbc_panel_sendmessage = new GridBagConstraints();
 		gbc_panel_sendmessage.fill = GridBagConstraints.HORIZONTAL;
@@ -767,6 +781,7 @@ public class GuiView implements View {
 		menuItem_help_about.setText(Messages.getString("View.menuItem_help_close_1.text"));
 		menuItem_diff.setText(Messages.getString("View.menuItem.diff")); //$NON-NLS-1$
 		menuItem_scroll.setText(Messages.getString("View.menuItem_scroll.text"));
+		menuItem_sendmessage.setText(Messages.getString("View.menuItem.sendmessage.text")); //$NON-NLS-1$
 		radio_language_de_de.setText(Messages.getString("View.radio_language_de_de.text"));
 		radio_language_en_us.setText(Messages.getString("View.radio_language_en_us.text"));
 		radio_message_target.setText(Messages.getString("View.radio_message_target.text")); //$NON-NLS-1$
