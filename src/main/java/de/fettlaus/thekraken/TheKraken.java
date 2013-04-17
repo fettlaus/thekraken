@@ -15,11 +15,8 @@ public class TheKraken {
 	 * @throws SocketException 
 	 */
 	public static void main(String[] args) throws InterruptedException, SocketException {
-		// Locale.setDefault(Locale.GERMAN);
-		// Locale.setDefault(Locale.GERMANY);
-		final Presenter pres = new Presenter(new KrakenModel(), new GuiView());
 
-		// EventQueue.invokeLater( );
+		final Presenter pres = new Presenter(new KrakenModel(), new GuiView());
 
 	}
 

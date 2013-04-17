@@ -1,14 +1,7 @@
-/**
- * 
- */
 package de.fettlaus.thekraken.model;
 
 import java.util.List;
 
-/**
- * @author bachelor
- * 
- */
 public interface Model {
 	void broadcastMessage(Message msg);
 

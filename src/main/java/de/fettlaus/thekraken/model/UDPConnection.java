@@ -14,14 +14,8 @@ import de.fettlaus.thekraken.events.NewNotificationEvent;
 import de.fettlaus.thekraken.events.NewNotificationEvent.NotificationType;
 
 public class UDPConnection implements Runnable {
-	// BlockingQueue<Message> messages;
 	DatagramSocket socket;
-	// InetAddress address;
-	// int port;
 	ByteArrayOutputStream baos;
-	// Semaphore socketInUse;
-	// byte[] pingmessage;
-	// private ConnectionBundle parent;
 	DataOutputStream dos;
 
 	public UDPConnection() {

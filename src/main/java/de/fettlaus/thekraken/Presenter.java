@@ -90,7 +90,6 @@ public class Presenter {
 		if (msg != null) {
 			text = text + ": " + msg;
 		}
-		// TODO: handle in swing-thread
 		view.setNotification(text);
 		view.addHostMessage(String.valueOf(evt.getTimestamp()), text);
 	}

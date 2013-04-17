@@ -113,7 +113,6 @@ public class KrakenModel implements Model {
 			} catch (final IOException e) {
 				evtbus.post(new NewNotificationEvent(NotificationType.CANT_SEND_UDP));
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

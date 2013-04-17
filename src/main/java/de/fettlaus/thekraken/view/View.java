@@ -1,9 +1,5 @@
 package de.fettlaus.thekraken.view;
 
-/**
- * @author bachelor
- * 
- */
 public interface View {
 	void addHostMessage(String timestamp, String msg);
 

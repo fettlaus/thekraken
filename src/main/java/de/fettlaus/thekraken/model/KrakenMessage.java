@@ -182,7 +182,6 @@ public class KrakenMessage implements Message {
 		} else {
 			arg0.writeShort(body_tmp.length);
 			arg0.writeLong(timestamp);
-			// TODO check for type not length
 			if (body_tmp.length > 0) {
 				arg0.write(body_tmp, 0, body_tmp.length);
 			}
